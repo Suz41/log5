@@ -1,7 +1,7 @@
 window.Logit = window.Logit || {};
 
 Logit.Export = {
-  /** @param {Array} movies @param {'json'|'txt'} format @param {Function} [closeCallback] */
+  /** @param {Array} movies @param {'json'|'csv'|'txt'} format @param {Function} [closeCallback] */
   doExport(movies, format, closeCallback) {
     let data, ext, mime;
     if (format === 'json') {
@@ -11,6 +11,14 @@ Logit.Export = {
       data = JSON.stringify(slim, null, 2);
       mime = 'application/json';
       ext = 'json';
+    } else if (format === 'csv') {
+      const header = 'Title,Rating,Date,Rewatched,Year,TMDB ID,IMDB ID';
+      const rows = movies.map(function(m) {
+        return '"' + (m.t || '').replace(/"/g, '""') + '",' + (m.r || '') + ',' + (m.d || '') + ',' + (m.w ? 'Yes' : 'No') + ',' + (m.yr || '') + ',' + (m.tmdb_id || '') + ',' + (m.imdb_id || '');
+      });
+      data = header + '\n' + rows.join('\n');
+      mime = 'text/csv';
+      ext = 'csv';
     } else {
       const lines = movies.map(function(m) {
         return m.t + ' | ' + (m.r || '') + '/5 | ' + (m.d || '') + ' | ' + (m.w || '') + ' | ' + (m.yr || '') + ' | ' + (m.tmdb_id || '') + ' | ' + (m.imdb_id || '');

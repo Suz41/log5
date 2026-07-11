@@ -122,16 +122,23 @@ Logit.ProfilePage = {
       this.manualSync();
     });
 
-    document.getElementById('exportDataBtn').addEventListener('click', () => {
-      this.exportData();
+    document.getElementById('exportJsonBtn').addEventListener('click', () => {
+      const movies = Logit.Storage.loadMovies();
+      Logit.Export.doExport(movies, 'json');
+    });
+
+    document.getElementById('exportCsvBtn').addEventListener('click', () => {
+      const movies = Logit.Storage.loadMovies();
+      Logit.Export.doExport(movies, 'csv');
+    });
+
+    document.getElementById('exportTxtBtn').addEventListener('click', () => {
+      const movies = Logit.Storage.loadMovies();
+      Logit.Export.doExport(movies, 'txt');
     });
 
     document.getElementById('importDataBtn').addEventListener('click', () => {
       document.getElementById('importFileInput').click();
-    });
-
-    document.getElementById('downloadCloudBtn').addEventListener('click', () => {
-      this.downloadFromCloud();
     });
 
     document.getElementById('signOutBtn').addEventListener('click', () => {
@@ -154,24 +161,15 @@ Logit.ProfilePage = {
 
     // Settings toggles
     const autoSyncToggle = document.getElementById('autoSyncToggle');
-    const wifiOnlyToggle = document.getElementById('wifiOnlyToggle');
 
     const autoSyncEnabled = localStorage.getItem('logit_auto_sync') !== 'false';
-    const wifiOnlyEnabled = localStorage.getItem('logit_sync_wifi_only') === 'true';
 
     autoSyncToggle.classList.toggle('active', autoSyncEnabled);
-    wifiOnlyToggle.classList.toggle('active', wifiOnlyEnabled);
 
     autoSyncToggle.addEventListener('click', () => {
       autoSyncToggle.classList.toggle('active');
       const enabled = autoSyncToggle.classList.contains('active');
       localStorage.setItem('logit_auto_sync', enabled ? 'true' : 'false');
-    });
-
-    wifiOnlyToggle.addEventListener('click', () => {
-      wifiOnlyToggle.classList.toggle('active');
-      const enabled = wifiOnlyToggle.classList.contains('active');
-      localStorage.setItem('logit_sync_wifi_only', enabled ? 'true' : 'false');
     });
   },
 
@@ -202,33 +200,7 @@ Logit.ProfilePage = {
   },
 
   /**
-   * Export data as JSON
-   */
-  exportData() {
-    const movies = Logit.Storage.loadMovies();
-    const data = {
-      version: '1.0',
-      exportedAt: new Date().toISOString(),
-      count: movies.length,
-      movies: movies
-    };
-
-    const json = JSON.stringify(data, null, 2);
-    const blob = new Blob([json], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `logit-export-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    alert('Export successful!');
-  },
-
-  /**
-   * Import data from JSON
+   * Import data from file (JSON or CSV)
    */
   importData(e) {
     const file = e.target.files[0];
@@ -237,18 +209,51 @@ Logit.ProfilePage = {
     const reader = new FileReader();
     reader.onload = (event) => {
       try {
-        const data = JSON.parse(event.target.result);
-        const movies = data.movies || [];
+        const text = event.target.result;
+        let movies = [];
 
-        if (!Array.isArray(movies)) {
-          alert('Invalid import file format.');
+        if (file.name.endsWith('.json')) {
+          const data = JSON.parse(text);
+          movies = data.movies || data || [];
+        } else if (file.name.endsWith('.csv')) {
+          const lines = text.split('\n').slice(1);
+          movies = lines.filter(l => l.trim()).map(line => {
+            const cols = line.split(',');
+            return {
+              id: Date.now() + Math.random(),
+              t: (cols[0] || '').replace(/"/g, ''),
+              r: parseFloat(cols[1]) || 0,
+              d: cols[2] || '',
+              w: cols[3] === 'Yes',
+              yr: cols[4] || '',
+              tmdb_id: cols[5] || '',
+              imdb_id: cols[6] || ''
+            };
+          });
+        } else {
+          const lines = text.split('\n').filter(l => l.trim());
+          movies = lines.map(line => {
+            const parts = line.split('|').map(p => p.trim());
+            return {
+              id: Date.now() + Math.random(),
+              t: parts[0] || '',
+              r: parseFloat(parts[1]) || 0,
+              d: parts[2] || '',
+              w: parts[3] === 'rewatch',
+              yr: parts[4] || '',
+              tmdb_id: parts[5] || '',
+              imdb_id: parts[6] || ''
+            };
+          });
+        }
+
+        if (!Array.isArray(movies) || movies.length === 0) {
+          alert('No movies found in file.');
           return;
         }
 
-        // Merge with existing movies (avoid duplicates)
         const existing = Logit.Storage.loadMovies();
         const existingIds = new Set(existing.map(m => m.id));
-
         const newMovies = movies.filter(m => !existingIds.has(m.id));
         const merged = [...existing, ...newMovies];
 
@@ -261,57 +266,6 @@ Logit.ProfilePage = {
     };
     reader.readAsText(file);
     e.target.value = '';
-  },
-
-  /**
-   * Download all movies from cloud
-   */
-  async downloadFromCloud() {
-    if (Logit.Auth.isOfflineMode()) {
-      alert('Not available in offline mode.');
-      return;
-    }
-
-    const client = Logit.Supabase.getClient();
-    const userId = localStorage.getItem('logit_user_id');
-
-    if (!client || !userId) {
-      alert('Not authenticated.');
-      return;
-    }
-
-    try {
-      const btn = document.getElementById('downloadCloudBtn');
-      const originalText = btn.textContent;
-      btn.disabled = true;
-      btn.textContent = 'Downloading...';
-
-      const { data: cloudMovies, error } = await client
-        .from('movies')
-        .select('*')
-        .eq('user_id', userId);
-
-      if (error) throw new Error(error.message);
-
-      // Merge with local
-      const existing = Logit.Storage.loadMovies();
-      const existingIds = new Set(existing.map(m => m.id));
-
-      const newMovies = (cloudMovies || []).filter(m => !existingIds.has(m.id));
-      const merged = [...existing, ...newMovies.map(m => ({
-        ...m,
-        updated_at: m.updated_at
-      }))];
-
-      Logit.Storage.saveMovies(merged);
-      alert(`Downloaded ${newMovies.length} new movies from cloud!`);
-      this.updateStorageInfo();
-
-      btn.disabled = false;
-      btn.textContent = originalText;
-    } catch (e) {
-      alert('Download failed: ' + e.message);
-    }
   },
 
   /**
@@ -347,10 +301,8 @@ Logit.ProfilePage = {
       section.style.display = show ? 'block' : 'none';
     }
 
-    // Hide cloud features if offline
     if (show) {
       document.getElementById('manualSyncBtn').style.display = 'none';
-      document.getElementById('downloadCloudBtn').style.display = 'none';
     }
   },
 
