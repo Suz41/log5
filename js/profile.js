@@ -2,143 +2,163 @@ window.Logit = window.Logit || {};
 
 Logit.ProfilePage = {
   _user: null,
-  _syncStatusInterval: null,
 
   async init() {
-    this.checkAuth();
-    this.setupListeners();
-    await this.loadProfile();
-    this.updateSyncStatus();
-    this.setupSyncStatusUpdates();
-  },
-
-  async checkAuth() {
-    const user = await Logit.Supabase.getUser();
-    const isOffline = localStorage.getItem('logit_offline_mode') === 'true';
-    if (!user && !isOffline) {
-      window.location.href = 'welcome.html';
-      return;
+    try {
+      await this.checkAuth();
+      this.setupListeners();
+      this.loadProfile();
+      this.updateSyncStatus();
+    } catch (e) {
+      console.error('Profile init error:', e);
     }
-    this._user = user;
-    this.showOfflineModeUI(isOffline && !user);
   },
 
-  async loadProfile() {
-    if (this._user) {
-      document.getElementById('profileName').textContent =
-        this._user.user_metadata?.username || this._user.email?.split('@')[0] || 'User';
-      document.getElementById('profileEmail').textContent = this._user.email || '';
-      const initial = (this._user.email || 'U')[0].toUpperCase();
-      document.getElementById('profileAvatar').textContent = initial;
+  checkAuth() {
+    const isOffline = localStorage.getItem('logit_offline_mode') === 'true';
+    this._user = null;
+    try {
+      const session = Logit.Supabase.getSession && Logit.Supabase.getClient();
+      // don't block on async — just read localStorage state
+    } catch (e) {}
+    this.showOfflineModeUI(isOffline);
+  },
+
+  loadProfile() {
+    const user = this._user;
+    if (user) {
+      const nameEl = document.getElementById('profileName');
+      const emailEl = document.getElementById('profileEmail');
+      const avatarEl = document.getElementById('profileAvatar');
+      if (nameEl) nameEl.textContent = user.user_metadata?.username || user.email?.split('@')[0] || 'User';
+      if (emailEl) emailEl.textContent = user.email || '';
+      if (avatarEl) avatarEl.textContent = (user.email || 'U')[0].toUpperCase();
     } else {
-      document.getElementById('profileName').textContent = 'Offline Mode';
-      document.getElementById('profileEmail').textContent = 'Local storage only';
+      const nameEl = document.getElementById('profileName');
+      const emailEl = document.getElementById('profileEmail');
+      if (nameEl) nameEl.textContent = 'Offline Mode';
+      if (emailEl) emailEl.textContent = 'Local storage only';
     }
     this.updateStorageInfo();
   },
 
   updateStorageInfo() {
-    const movies = Logit.Storage.loadMovies();
-    const storageInfo = Logit.Storage.getStorageSize();
-    const formatted = Logit.Storage.formatBytes(storageInfo.total);
-    document.getElementById('moviesCount').textContent = movies.length;
-    document.getElementById('localStorageUsage').textContent =
-      formatted.val + ' ' + formatted.unit;
+    try {
+      const movies = Logit.Storage.loadMovies();
+      const storageInfo = Logit.Storage.getStorageSize();
+      const formatted = Logit.Storage.formatBytes(storageInfo.total);
+      const countEl = document.getElementById('moviesCount');
+      const usageEl = document.getElementById('localStorageUsage');
+      if (countEl) countEl.textContent = movies.length;
+      if (usageEl) usageEl.textContent = formatted.val + ' ' + formatted.unit;
+    } catch (e) { console.error('Storage info error:', e); }
   },
 
   updateSyncStatus() {
-    const status = Logit.Sync.getSyncStatus();
-    const lastSync = Logit.Sync.getLastSyncTime();
-    const pending = Logit.Offline.getPending();
-    const badge = document.getElementById('syncStatusBadge');
-    const statusText = document.getElementById('syncStatusText');
-    badge.className = 'syncStatus ' + status;
-    if (status === 'offline') statusText.textContent = 'Offline';
-    else if (status === 'syncing') statusText.textContent = 'Syncing...';
-    else statusText.textContent = 'Synced';
-    document.getElementById('lastSyncedTime').textContent = lastSync ? this.formatTime(lastSync) : 'Never';
-    document.getElementById('pendingChanges').textContent = pending.length;
-  },
-
-  setupSyncStatusUpdates() {
-    Logit.Sync.onSyncStatusChange(() => { this.updateSyncStatus(); });
-    this._syncStatusInterval = setInterval(() => { this.updateSyncStatus(); }, 1000);
+    try {
+      const status = Logit.Sync.getSyncStatus();
+      const lastSync = Logit.Sync.getLastSyncTime();
+      const pending = Logit.Offline.getPending();
+      const badge = document.getElementById('syncStatusBadge');
+      const statusText = document.getElementById('syncStatusText');
+      if (badge) badge.className = 'syncStatus ' + status;
+      if (statusText) {
+        if (status === 'offline') statusText.textContent = 'Offline';
+        else if (status === 'syncing') statusText.textContent = 'Syncing...';
+        else statusText.textContent = 'Synced';
+      }
+      const lastSyncEl = document.getElementById('lastSyncedTime');
+      const pendingEl = document.getElementById('pendingChanges');
+      if (lastSyncEl) lastSyncEl.textContent = lastSync ? this.formatTime(lastSync) : 'Never';
+      if (pendingEl) pendingEl.textContent = pending.length;
+    } catch (e) { console.error('Sync status error:', e); }
   },
 
   setupListeners() {
     const $ = (id) => document.getElementById(id);
 
-    // Back
-    $('backBtn').addEventListener('click', () => { window.history.back(); });
+    const backBtn = $('backBtn');
+    if (backBtn) backBtn.addEventListener('click', () => { window.history.back(); });
 
-    // Manual sync
-    $('manualSyncBtn').addEventListener('click', () => { this.manualSync(); });
+    const manualSyncBtn = $('manualSyncBtn');
+    if (manualSyncBtn) manualSyncBtn.addEventListener('click', () => { this.manualSync(); });
 
-    // Export button -> open modal
-    $('exportBtn').addEventListener('click', () => {
+    // Export
+    const exportBtn = $('exportBtn');
+    if (exportBtn) exportBtn.addEventListener('click', () => {
       Logit.Utils.openModal($('exportModal'));
     });
 
-    // Export modal buttons
-    $('exportJsonBtn').addEventListener('click', () => {
+    const exportJsonBtn = $('exportJsonBtn');
+    if (exportJsonBtn) exportJsonBtn.addEventListener('click', () => {
       Logit.Export.doExport(Logit.Storage.loadMovies(), 'json', () => {
         Logit.Utils.closeModal($('exportModal'));
       });
     });
-    $('exportTxtBtn').addEventListener('click', () => {
+
+    const exportTxtBtn = $('exportTxtBtn');
+    if (exportTxtBtn) exportTxtBtn.addEventListener('click', () => {
       Logit.Export.doExport(Logit.Storage.loadMovies(), 'txt', () => {
         Logit.Utils.closeModal($('exportModal'));
       });
     });
-    $('exportCancelBtn').addEventListener('click', () => {
+
+    const exportCancelBtn = $('exportCancelBtn');
+    if (exportCancelBtn) exportCancelBtn.addEventListener('click', () => {
       Logit.Utils.closeModal($('exportModal'));
     });
 
-    // Import button -> open modal
-    $('importBtn').addEventListener('click', () => {
+    // Import
+    const importBtn = $('importBtn');
+    if (importBtn) importBtn.addEventListener('click', () => {
       Logit.Utils.openModal($('importModal'));
-      $('importText').value = '';
-      $('importStatus').textContent = '';
-      $('importText').focus();
+      const t = $('importText');
+      const s = $('importStatus');
+      if (t) t.value = '';
+      if (s) s.textContent = '';
+      if (t) t.focus();
     });
 
-    // Import modal close
-    $('importModalClose').addEventListener('click', () => {
+    const importModalClose = $('importModalClose');
+    if (importModalClose) importModalClose.addEventListener('click', () => {
       Logit.Utils.closeModal($('importModal'));
-      $('importText').value = '';
-      $('importStatus').textContent = '';
+      const t = $('importText');
+      const s = $('importStatus');
+      if (t) t.value = '';
+      if (s) s.textContent = '';
     });
 
-    // File input loads file into textarea
-    $('fileInput').addEventListener('change', (e) => {
+    const fileInput = $('fileInput');
+    if (fileInput) fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
       reader.onload = (ev) => {
-        $('importText').value = ev.target.result;
-        $('importStatus').textContent = 'File loaded: ' + file.name;
+        const t = $('importText');
+        const s = $('importStatus');
+        if (t) t.value = ev.target.result;
+        if (s) s.textContent = 'File loaded: ' + file.name;
       };
       reader.readAsText(file);
     });
 
-    // Import start button — same logic as stats page
-    $('importStartBtn').onclick = async () => {
-      const text = $('importText').value.trim();
-      if (!text) return;
+    const importStartBtn = $('importStartBtn');
+    if (importStartBtn) importStartBtn.onclick = async () => {
+      const text = ($('importText') || {}).value;
+      if (!text || !text.trim()) return;
 
       const API = Logit.Config.getApiKey();
       let movies = Logit.Storage.loadMovies();
       const statusEl = $('importStatus');
-      const importStartBtn = $('importStartBtn');
 
       /* ======== JSON Import ======== */
-      if (text.charAt(0) === '[' || text.charAt(0) === '{') {
+      if (text.trim().charAt(0) === '[' || text.trim().charAt(0) === '{') {
         try {
           const parsed = JSON.parse(text);
           const arr = Array.isArray(parsed) ? parsed : (parsed.movies || []);
 
           if (Logit.Import.isSlimExport(arr)) {
-            if (!API) { statusEl.textContent = 'TMDB API key required. Set it from main page.'; return; }
+            if (!API) { if (statusEl) statusEl.textContent = 'TMDB API key required.'; return; }
             importStartBtn.disabled = true;
             const existingTmdbIds = new Set(movies.map(m => m.tmdb_id || ''));
             const existingIds = new Set(movies.map(m => m.id));
@@ -148,8 +168,7 @@ Logit.ProfilePage = {
               const entry = arr[i];
               if ((!entry.t && !entry.id) || !entry.tmdb_id) { failed++; continue; }
               if (existingIds.has(entry.id) || existingTmdbIds.has(entry.tmdb_id)) { continue; }
-
-              statusEl.textContent = 'Fetching ' + (i + 1) + '/' + arr.length + ': ' + entry.t;
+              if (statusEl) statusEl.textContent = 'Fetching ' + (i + 1) + '/' + arr.length + ': ' + entry.t;
 
               try {
                 const detail = await Logit.Search.tmdb('https://api.themoviedb.org/3/movie/' + entry.tmdb_id + '?api_key=' + API + '&append_to_response=credits,images');
@@ -159,7 +178,7 @@ Logit.ProfilePage = {
               } catch (err) { failed++; }
             }
             Logit.Storage.saveMovies(movies);
-            statusEl.textContent = imported + ' imported' + (failed > 0 ? ', ' + failed + ' failed' : '');
+            if (statusEl) statusEl.textContent = imported + ' imported' + (failed > 0 ? ', ' + failed + ' failed' : '');
             importStartBtn.disabled = false;
             setTimeout(() => { Logit.Utils.closeModal($('importModal')); this.updateStorageInfo(); }, 1500);
             return;
@@ -177,14 +196,14 @@ Logit.ProfilePage = {
             count++;
           });
           Logit.Storage.saveMovies(movies);
-          statusEl.textContent = count + ' imported from JSON';
+          if (statusEl) statusEl.textContent = count + ' imported from JSON';
           setTimeout(() => { Logit.Utils.closeModal($('importModal')); this.updateStorageInfo(); }, 1500);
           return;
-        } catch (err) { statusEl.textContent = 'Invalid JSON format'; return; }
+        } catch (err) { if (statusEl) statusEl.textContent = 'Invalid JSON format'; return; }
       }
 
       /* ======== Text / TXT Import ======== */
-      if (!API) { statusEl.textContent = 'TMDB API key required. Set it from main page.'; return; }
+      if (!API) { if (statusEl) statusEl.textContent = 'TMDB API key required.'; return; }
 
       const lines = text.split('\n').filter(l => l.trim());
       if (lines.length === 0) return;
@@ -196,8 +215,7 @@ Logit.ProfilePage = {
       for (let i = 0; i < lines.length; i++) {
         const entry = Logit.Import.parseLine(lines[i]);
         if (!entry) { failed++; continue; }
-
-        statusEl.textContent = 'Importing ' + (i + 1) + '/' + lines.length + ': ' + (entry.title || entry.tmdbId || entry.imdbId);
+        if (statusEl) statusEl.textContent = 'Importing ' + (i + 1) + '/' + lines.length + ': ' + (entry.title || entry.tmdbId || entry.imdbId);
 
         try {
           let detail = null;
@@ -241,30 +259,38 @@ Logit.ProfilePage = {
       }
 
       Logit.Storage.saveMovies(movies);
-      statusEl.textContent = imported + ' imported' + (failed > 0 ? ', ' + failed + ' failed' : '');
+      if (statusEl) statusEl.textContent = imported + ' imported' + (failed > 0 ? ', ' + failed + ' failed' : '');
       importStartBtn.disabled = false;
       setTimeout(() => { Logit.Utils.closeModal($('importModal')); this.updateStorageInfo(); }, 1500);
     };
 
     // Account
-    $('signOutBtn').addEventListener('click', () => {
+    const signOutBtn = $('signOutBtn');
+    if (signOutBtn) signOutBtn.addEventListener('click', () => {
       if (confirm('Are you sure you want to sign out?')) Logit.Auth.signOut();
     });
-    $('deleteAccountBtn').addEventListener('click', () => { this.deleteAccount(); });
-    $('enableCloudBtn').addEventListener('click', () => { window.location.href = 'welcome.html'; });
+
+    const deleteAccountBtn = $('deleteAccountBtn');
+    if (deleteAccountBtn) deleteAccountBtn.addEventListener('click', () => { this.deleteAccount(); });
+
+    const enableCloudBtn = $('enableCloudBtn');
+    if (enableCloudBtn) enableCloudBtn.addEventListener('click', () => { window.location.href = 'welcome.html'; });
 
     // Settings toggles
     const autoSyncToggle = $('autoSyncToggle');
-    const autoSyncEnabled = localStorage.getItem('logit_auto_sync') !== 'false';
-    autoSyncToggle.classList.toggle('active', autoSyncEnabled);
-    autoSyncToggle.addEventListener('click', () => {
-      autoSyncToggle.classList.toggle('active');
-      localStorage.setItem('logit_auto_sync', autoSyncToggle.classList.contains('active') ? 'true' : 'false');
-    });
+    if (autoSyncToggle) {
+      const autoSyncEnabled = localStorage.getItem('logit_auto_sync') !== 'false';
+      autoSyncToggle.classList.toggle('active', autoSyncEnabled);
+      autoSyncToggle.addEventListener('click', () => {
+        autoSyncToggle.classList.toggle('active');
+        localStorage.setItem('logit_auto_sync', autoSyncToggle.classList.contains('active') ? 'true' : 'false');
+      });
+    }
   },
 
   async manualSync() {
     const btn = document.getElementById('manualSyncBtn');
+    if (!btn) return;
     btn.disabled = true;
     btn.textContent = 'Syncing...';
     try {
@@ -286,7 +312,10 @@ Logit.ProfilePage = {
   showOfflineModeUI(show) {
     const section = document.getElementById('offlineModeSection');
     if (section) section.style.display = show ? 'block' : 'none';
-    if (show) document.getElementById('manualSyncBtn').style.display = 'none';
+    if (show) {
+      const btn = document.getElementById('manualSyncBtn');
+      if (btn) btn.style.display = 'none';
+    }
   },
 
   formatTime(date) {
