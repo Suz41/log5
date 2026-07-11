@@ -170,7 +170,9 @@ Logit.Auth = {
   async signOut() {
     const client = Logit.Supabase.getClient();
     if (client) await client.auth.signOut();
-    localStorage.clear();
+    localStorage.removeItem('logit_auth_token');
+    localStorage.removeItem('logit_user_id');
+    localStorage.removeItem('logit_offline_mode');
     location.href = 'welcome.html';
   },
 
