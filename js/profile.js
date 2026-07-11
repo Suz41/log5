@@ -222,37 +222,21 @@ Logit.ProfilePage = {
             movies = await this.fetchTMDBForMovies(movies);
           }
         } else {
-          // CSV or TXT: parse and fetch TMDB data
-          let parsed = [];
-          if (file.name.endsWith('.csv')) {
-            const lines = text.split('\n').slice(1);
-            parsed = lines.filter(l => l.trim()).map(line => {
-              const cols = this.parseCSVLine(line);
-              return {
-                t: (cols[0] || '').trim(),
-                r: parseFloat(cols[1]) || 3,
-                d: (cols[2] || '').trim(),
-                w: (cols[3] || '').trim() === 'Yes',
-                yr: (cols[4] || '').trim(),
-                tmdb_id: (cols[5] || '').trim(),
-                imdb_id: (cols[6] || '').trim()
-              };
-            }).filter(m => m.t);
-          } else {
-            const lines = text.split('\n').filter(l => l.trim());
-            parsed = lines.map(line => {
-              const parts = line.split('|').map(p => p.trim());
-              return {
-                t: parts[0] || '',
-                r: parseFloat(parts[1]) || 3,
-                d: parts[2] || '',
-                w: parts[3] === 'rewatch',
-                yr: parts[4] || '',
-                tmdb_id: parts[5] || '',
-                imdb_id: parts[6] || ''
-              };
-            }).filter(m => m.t);
-          }
+          // CSV or TXT: use same parser as stats page
+          const lines = text.split('\n').filter(l => l.trim());
+          parsed = lines.map(line => {
+            const entry = Logit.Import.parseLine(line);
+            if (!entry) return null;
+            return {
+              t: entry.title || '',
+              r: entry.rating || 3,
+              d: entry.date || '',
+              w: entry.rewatch || false,
+              yr: entry.year || '',
+              tmdb_id: entry.tmdbId || '',
+              imdb_id: entry.imdbId || ''
+            };
+          }).filter(m => m && m.t || m.tmdb_id || m.imdb_id);
           movies = await this.fetchTMDBForMovies(parsed);
         }
 
