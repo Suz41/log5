@@ -216,8 +216,9 @@ Logit.ProfilePage = {
           const data = JSON.parse(text);
           movies = data.movies || data || [];
 
-          // JSON import: check if slim format (needs TMDB fetch)
-          if (movies.length > 0 && movies[0].t && !movies[0].sp && movies[0].tmdb_id) {
+          // Fetch TMDB data for any movie missing poster
+          const needsFetch = movies.some(m => !m.sp && (m.tmdb_id || m.imdb_id || m.t));
+          if (needsFetch) {
             movies = await this.fetchTMDBForMovies(movies);
           }
         } else {
@@ -290,8 +291,8 @@ Logit.ProfilePage = {
     for (let i = 0; i < movies.length; i++) {
       const m = movies[i];
 
-      // Already has full data (poster exists)
-      if (m.sp || m.g) {
+      // Already has full data (poster and genres exist)
+      if (m.sp && m.g) {
         results.push(m);
         continue;
       }
