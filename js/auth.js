@@ -35,7 +35,10 @@ Logit.Auth = {
     const forgotBtn = document.getElementById('forgotPasswordBtn');
 
     if (signInBtn) signInBtn.addEventListener('click', () => this.handleSignIn());
-    if (createBtn) createBtn.addEventListener('click', () => this.handleCreateAccount());
+    if (createBtn) createBtn.addEventListener('click', () => {
+      if (this._mode === 'signin') this.toggleMode();
+      else this.handleCreateAccount();
+    });
     if (offlineBtn) offlineBtn.addEventListener('click', () => this.continueOffline());
     if (toggleBtn) toggleBtn.addEventListener('click', () => this.togglePassword());
     if (forgotBtn) forgotBtn.addEventListener('click', () => this.handleForgotPassword());
@@ -50,6 +53,28 @@ Logit.Auth = {
         }
       });
     }
+  },
+
+  toggleMode() {
+    const usernameField = document.getElementById('authUsername');
+    const signInBtn = document.getElementById('signInBtn');
+    const createBtn = document.getElementById('createAccountBtn');
+    const forgotBtn = document.getElementById('forgotPasswordBtn');
+
+    if (this._mode === 'signin') {
+      this._mode = 'signup';
+      if (usernameField) usernameField.style.display = 'block';
+      if (signInBtn) signInBtn.style.display = 'none';
+      if (createBtn) { createBtn.textContent = 'Create Account'; }
+      if (forgotBtn) forgotBtn.style.display = 'none';
+    } else {
+      this._mode = 'signin';
+      if (usernameField) usernameField.style.display = 'none';
+      if (signInBtn) signInBtn.style.display = 'block';
+      if (createBtn) { createBtn.textContent = 'Create Account'; }
+      if (forgotBtn) forgotBtn.style.display = 'block';
+    }
+    this.setMessage('');
   },
 
   togglePassword() {
