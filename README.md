@@ -12,6 +12,7 @@ Staging and testing environment for **Log!t** `v2.0.0` (Offline-first movie logg
 - **Registration Validation** — Username uniqueness check and duplicate email alerts
 - **PC Layout** — Sticky header navigation, inline settings, responsive grid (4-10 columns)
 
-## Setup & Design Guides
-* Setup & SQL schema: [CLOUD_SETUP.md](CLOUD_SETUP.md)
+## Setup, Tutorial & Design Guides
+* Detailed Setup & Usage Tutorial: [TUTORIAL.md](TUTORIAL.md)
+* Cloud Schema Reference: [CLOUD_SETUP.md](CLOUD_SETUP.md)
 * Design System & tokens: [design.md](design.md)
