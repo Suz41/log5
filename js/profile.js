@@ -227,17 +227,17 @@ Logit.ProfilePage = {
           if (file.name.endsWith('.csv')) {
             const lines = text.split('\n').slice(1);
             parsed = lines.filter(l => l.trim()).map(line => {
-              const cols = line.split(',');
+              const cols = this.parseCSVLine(line);
               return {
-                t: (cols[0] || '').replace(/"/g, ''),
+                t: (cols[0] || '').trim(),
                 r: parseFloat(cols[1]) || 3,
-                d: cols[2] || '',
-                w: cols[3] === 'Yes',
-                yr: cols[4] || '',
-                tmdb_id: cols[5] || '',
-                imdb_id: cols[6] || ''
+                d: (cols[2] || '').trim(),
+                w: (cols[3] || '').trim() === 'Yes',
+                yr: (cols[4] || '').trim(),
+                tmdb_id: (cols[5] || '').trim(),
+                imdb_id: (cols[6] || '').trim()
               };
-            });
+            }).filter(m => m.t);
           } else {
             const lines = text.split('\n').filter(l => l.trim());
             parsed = lines.map(line => {
@@ -251,7 +251,7 @@ Logit.ProfilePage = {
                 tmdb_id: parts[5] || '',
                 imdb_id: parts[6] || ''
               };
-            });
+            }).filter(m => m.t);
           }
           movies = await this.fetchTMDBForMovies(parsed);
         }
@@ -275,6 +275,28 @@ Logit.ProfilePage = {
     };
     reader.readAsText(file);
     e.target.value = '';
+  },
+
+  /**
+   * Parse a CSV line handling quoted fields
+   */
+  parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        inQuotes = !inQuotes;
+      } else if (ch === ',' && !inQuotes) {
+        result.push(current);
+        current = '';
+      } else {
+        current += ch;
+      }
+    }
+    result.push(current);
+    return result;
   },
 
   /**
