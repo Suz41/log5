@@ -72,9 +72,6 @@ Logit.ProfilePage = {
     document.getElementById('exportJsonBtn').addEventListener('click', () => {
       Logit.Export.doExport(Logit.Storage.loadMovies(), 'json');
     });
-    document.getElementById('exportCsvBtn').addEventListener('click', () => {
-      Logit.Export.doExport(Logit.Storage.loadMovies(), 'csv');
-    });
     document.getElementById('exportTxtBtn').addEventListener('click', () => {
       Logit.Export.doExport(Logit.Storage.loadMovies(), 'txt');
     });
