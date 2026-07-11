@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>Log!t - About</title>
+
+<link
+rel="preconnect"
+href="https://fonts.googleapis.com">
+
+<link
+href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap"
+rel="stylesheet">
+
+<link rel="stylesheet" href="css/main.css?v=9">
+<link rel="stylesheet" href="css/components.css?v=9">
+<link rel="stylesheet" href="css/about.css?v=9">
+<link rel="stylesheet" href="css/desktop.css?v=9">
+
+</head>
+
+<body class="about-page">
+
+<header class="header">
+<div class="headerRow">
+<div style="display:flex;align-items:center;gap:15px;">
+<button class="headBtn" onclick="if(history.length>1)history.back();else location.href='index.html'">
+<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+</button>
+<a href="index.html" class="logo">Log!t.</a>
+</div>
+<span class="headerTitle">About</span>
+<div class="pcHeaderNav">
+  <button class="pcNavBtn" onclick="location.href='index.html'">Library</button>
+  <button class="pcNavBtn" onclick="location.href='index.html?add=true'">Add Movie</button>
+  <button class="pcNavBtn" onclick="location.href='PS.html'">Stats</button>
+</div>
+<div style="width:32px" class="mobileSpacer"></div>
+</div>
+</header>
+
+<section class="wrap">
+
+<!-- APP INFO -->
+
+<div class="card">
+
+<div class="appHero">
+
+<div class="appIcon">L</div>
+
+<div class="appMeta">
+
+<h1>Log!t</h1>
+
+<p>Personal Movie Logger</p>
+
+</div>
+
+</div>
+
+<div class="infoRows">
+
+<div class="infoRow">
+
+<span class="infoLabel">Version</span>
+
+<span class="infoValue">v2.0.0</span>
+
+</div>
+
+<div class="infoRow">
+
+<span class="infoLabel">Creator</span>
+
+<span class="infoValue">
+<a href="https://github.com/Suz41" target="_blank">Suz41</a>
+</span>
+
+</div>
+
+<div class="infoRow">
+
+<span class="infoLabel">Live</span>
+
+<span class="infoValue">
+<a href="https://suz41.github.io/logitv4" target="_blank">suz41.github.io/logitv4</a>
+</span>
+
+</div>
+
+<div class="infoRow">
+
+<span class="infoLabel">Source</span>
+
+<span class="infoValue">
+<a href="https://github.com/Suz41/logitv4" target="_blank">GitHub</a>
+</span>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- TECH STACK -->
+
+<div class="card">
+
+<div class="cardTitle">Tech Stack</div>
+
+<div class="stackGrid">
+
+<div class="stackItem">
+
+<div class="stackIcon">H</div>
+
+<div class="stackInfo">
+
+<div class="stackName">HTML5</div>
+
+<div class="stackDesc">Structure</div>
+
+</div>
+
+</div>
+
+<div class="stackItem">
+
+<div class="stackIcon">C</div>
+
+<div class="stackInfo">
+
+<div class="stackName">CSS3</div>
+
+<div class="stackDesc">Styling</div>
+
+</div>
+
+</div>
+
+<div class="stackItem">
+
+<div class="stackIcon">JS</div>
+
+<div class="stackInfo">
+
+<div class="stackName">JavaScript</div>
+
+<div class="stackDesc">Vanilla, no frameworks</div>
+
+</div>
+
+</div>
+
+<div class="stackItem">
+
+<div class="stackIcon">T</div>
+
+<div class="stackInfo">
+
+<div class="stackName">TMDB API</div>
+
+<div class="stackDesc">Movie data</div>
+
+</div>
+
+</div>
+
+<div class="stackItem">
+
+<div class="stackIcon">G</div>
+
+<div class="stackInfo">
+
+<div class="stackName">Google Fonts</div>
+
+<div class="stackDesc">Inter + Poppins</div>
+
+</div>
+
+</div>
+
+<div class="stackItem">
+
+<div class="stackIcon">LS</div>
+
+<div class="stackInfo">
+
+<div class="stackName">localStorage</div>
+
+<div class="stackDesc">Browser storage</div>
+
+</div>
+
+</div>
+
+<div class="stackItem">
+
+<div class="stackIcon">GH</div>
+
+<div class="stackInfo">
+
+<div class="stackName">GitHub Pages</div>
+
+<div class="stackDesc">Hosting</div>
+
+</div>
+
+</div>
+
+<div class="stackItem">
+
+<div class="stackIcon">1F</div>
+
+<div class="stackInfo">
+
+<div class="stackName">Single File</div>
+
+<div class="stackDesc">Per page architecture</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- STORAGE -->
+
+<div class="card">
+
+<div class="cardTitle">Storage Usage</div>
+
+<div class="storageHero">
+
+<span class="storageBig" id="storageTotal">0</span>
+
+<span class="storageUnit" id="storageUnit">KB</span>
+
+</div>
+
+<div class="storageSub" id="storageSub">
+0 bytes used of ~5 MB limit
+</div>
+
+<div class="storageBar">
+
+<div
+class="storageFill"
+id="storageFill"
+style="width:0%">
+</div>
+
+</div>
+
+<div class="storageKeys" id="storageKeys">
+</div>
+
+</div>
+
+<!-- DATA STRUCTURE -->
+
+<div class="card">
+
+<div class="cardTitle">Movie Data Fields</div>
+
+<div class="fieldsList">
+
+<div class="fieldChip">
+<span class="fieldKey">t</span> Title
+</div>
+
+<div class="fieldChip">
+<span class="fieldKey">yr</span> Year
+</div>
+
+<div class="fieldChip">
+<span class="fieldKey">rt</span> Runtime
+</div>
+
+<div class="fieldChip">
+<span class="fieldKey">g</span> Genres
+</div>
+
+<div class="fieldChip">
+<span class="fieldKey">dr</span> Director
+</div>
+
+<div class="fieldChip">
+<span class="fieldKey">c</span> Cast
+</div>
+
+<div class="fieldChip">
+<span class="fieldKey">lg</span> Language
+</div>
+
+<div class="fieldChip">
+<span class="fieldKey">ct</span> Country
+</div>
+
+<div class="fieldChip">
+<span class="fieldKey">r</span> Rating
+</div>
+
+<div class="fieldChip">
+<span class="fieldKey">w</span> Watch Type
+</div>
+
+<div class="fieldChip">
+<span class="fieldKey">d</span> Date
+</div>
+
+<div class="fieldChip">
+<span class="fieldKey">sp</span> Poster
+</div>
+
+<div class="fieldChip">
+<span class="fieldKey">p</span> Posters
+</div>
+
+<div class="fieldChip">
+<span class="fieldKey">id</span> UUID
+</div>
+
+</div>
+
+</div>
+
+<!-- API KEY + CLEAR -->
+
+<div class="aboutActions">
+<button data-action="setApiKey">
+TMDB API Key
+</button>
+<button data-action="clearAllData" class="danger">
+Clear All Data
+</button>
+</div>
+
+</section>
+
+<div class="footer">
+
+<p>Built with vanilla HTML, CSS & JS</p>
+
+<p>No frameworks. No build tools. No dependencies.</p>
+
+<div class="creatorTag">
+
+Created by&nbsp;
+<a href="https://github.com/Suz41" target="_blank">Suz41</a>
+
+</div>
+
+</div>
+
+<script src="js/config.js?v=9"></script>
+<script src="js/storage.js?v=9"></script>
+<script src="js/utils.js?v=9"></script>
+<script src="js/about.js?v=9"></script>
+<script src="js/app.js?v=9"></script>
+</body>
+</html>

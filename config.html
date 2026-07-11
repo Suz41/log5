@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Configure Log!t - Supabase Setup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main.css?v=9">
+<link rel="stylesheet" href="css/auth.css?v=1">
+</head>
+<body class="welcomePage">
+
+<div class="welcomeContainer">
+  <div class="welcomeContent">
+    <div class="welcomeLogo">
+      <h1>Configure Log!t</h1>
+      <p class="welcomeTagline">Optional cloud setup</p>
+    </div>
+
+    <div class="welcomeMessage">
+      <p>To enable cloud sync and backups, configure your Supabase project. You can skip this and use Log!t offline.</p>
+    </div>
+
+    <div class="authForm" style="gap: 16px;">
+      <div>
+        <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px; text-transform: uppercase; font-weight: 600;">Supabase Project URL</label>
+        <input type="text" id="supabaseUrl" placeholder="https://xxxx.supabase.co" class="authInput">
+        <p class="smallText" style="margin-top: 6px;">
+          Get this from your <a href="https://app.supabase.com" target="_blank" style="color: var(--accent);">Supabase project settings</a>
+        </p>
+      </div>
+
+      <div>
+        <label style="font-size: 12px; color: var(--muted); display: block; margin-bottom: 6px; text-transform: uppercase; font-weight: 600;">Supabase Anon Key</label>
+        <input type="text" id="supabaseKey" placeholder="eyJhbGc..." class="authInput">
+        <p class="smallText" style="margin-top: 6px;">
+          The <strong>public</strong> anonymous key from your project settings
+        </p>
+      </div>
+
+      <button class="btn btnPrimary" id="configureBtn">
+        Configure Supabase
+      </button>
+
+      <button class="btn btnSecondary" id="skipBtn">
+        Skip for Now
+      </button>
+    </div>
+
+    <div class="welcomeFooter" style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px;">
+      <p class="smallText">
+        <strong>Need help?</strong> See the <a href="https://github.com/suz41/logitv4#cloud-setup" target="_blank" style="color: var(--accent);">setup guide</a>
+      </p>
+    </div>
+  </div>
+</div>
+
+<script src="js/config.js"></script>
+<script src="js/constants.js"></script>
+<script src="js/supabase.js"></script>
+<script>
+  document.getElementById('configureBtn').addEventListener('click', function() {
+    const url = document.getElementById('supabaseUrl').value.trim();
+    const key = document.getElementById('supabaseKey').value.trim();
+
+    if (!url || !key) {
+      alert('Please enter both URL and Key');
+      return;
+    }
+
+    try {
+      Logit.Supabase.configure(url, key);
+      alert('Configuration saved! Cloud features are now enabled.');
+      window.location.href = '/welcome.html';
+    } catch (e) {
+      alert('Configuration failed: ' + e.message);
+    }
+  });
+
+  document.getElementById('skipBtn').addEventListener('click', function() {
+    window.location.href = '/welcome.html';
+  });
+
+  // Load existing config if available
+  window.addEventListener('DOMContentLoaded', function() {
+    const url = localStorage.getItem('supabase_url');
+    const key = localStorage.getItem('supabase_anon_key');
+    if (url) document.getElementById('supabaseUrl').value = url;
+    if (key) document.getElementById('supabaseKey').value = key;
+  });
+</script>
+</body>
+</html>

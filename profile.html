@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Profile - Log!t</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main.css?v=9">
+<link rel="stylesheet" href="css/components.css?v=9">
+<link rel="stylesheet" href="css/auth.css?v=1">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+<header class="header" id="header">
+  <div class="headerRow">
+    <div style="display:flex;align-items:center;gap:10px;flex:1;">
+      <a href="index.html" class="logo">Log!t.</a>
+    </div>
+    <div class="pcHeaderNav">
+      <button class="pcNavBtn" onclick="location.href='index.html'">Library</button>
+      <button class="pcNavBtn" id="pcAddMovieBtn">Add Movie</button>
+      <button class="pcNavBtn" onclick="location.href='PS.html'">Stats</button>
+    </div>
+    <div style="display:flex;gap:6px;">
+      <button class="settingsIcon" id="backBtn" title="Back">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<section class="profileContainer" id="profileContainer">
+  <!-- Profile Header -->
+  <div class="profileHeader">
+    <div class="profileAvatar" id="profileAvatar">👤</div>
+    <div class="profileInfo">
+      <h2 class="profileName" id="profileName">Loading...</h2>
+      <p class="profileEmail" id="profileEmail"></p>
+    </div>
+  </div>
+
+  <!-- Sync Status -->
+  <div class="profileSection">
+    <div class="profileSectionTitle">Sync Status</div>
+    <div class="profileRow">
+      <span class="profileLabel">Status</span>
+      <div class="syncStatus" id="syncStatusBadge">
+        <span class="syncDot"></span>
+        <span id="syncStatusText">Synced</span>
+      </div>
+    </div>
+    <div class="profileRow">
+      <span class="profileLabel">Last Synced</span>
+      <span class="profileValue" id="lastSyncedTime">-</span>
+    </div>
+    <div class="profileRow">
+      <span class="profileLabel">Pending Changes</span>
+      <span class="profileValue" id="pendingChanges">0</span>
+    </div>
+    <button class="profileButton" id="manualSyncBtn" style="margin-top:12px;">
+      Manual Sync
+    </button>
+  </div>
+
+  <!-- Storage Usage -->
+  <div class="profileSection">
+    <div class="profileSectionTitle">Storage</div>
+    <div class="profileRow">
+      <span class="profileLabel">Local Storage</span>
+      <span class="profileValue" id="localStorageUsage">-</span>
+    </div>
+    <div class="profileRow">
+      <span class="profileLabel">Movies</span>
+      <span class="profileValue" id="moviesCount">0</span>
+    </div>
+  </div>
+
+  <!-- Sync Settings -->
+  <div class="profileSection">
+    <div class="profileSectionTitle">Sync Settings</div>
+    <div class="profileRow">
+      <span class="profileLabel">Auto Sync</span>
+      <button class="settingToggle" id="autoSyncToggle"></button>
+    </div>
+    <div class="profileRow">
+      <span class="profileLabel">Sync on Wi-Fi only</span>
+      <button class="settingToggle" id="wifiOnlyToggle"></button>
+    </div>
+  </div>
+
+  <!-- Data Management -->
+  <div class="profileSection">
+    <div class="profileSectionTitle">Data Management</div>
+    <button class="profileButton" id="exportDataBtn">
+      Export as JSON
+    </button>
+    <button class="profileButton" id="importDataBtn">
+      Import from JSON
+    </button>
+    <button class="profileButton" id="downloadCloudBtn">
+      Download from Cloud
+    </button>
+  </div>
+
+  <!-- Account -->
+  <div class="profileSection">
+    <div class="profileSectionTitle">Account</div>
+    <button class="profileButton" id="signOutBtn">
+      Sign Out
+    </button>
+    <button class="profileButton danger" id="deleteAccountBtn">
+      Delete Account
+    </button>
+  </div>
+
+  <!-- Offline Mode Footer -->
+  <div class="profileSection" id="offlineModeSection" style="display:none;">
+    <div class="profileSectionTitle">Offline Mode</div>
+    <p class="smallText" style="margin:0;">You're currently using Log!t in offline mode. Your data is stored locally on this device.</p>
+    <button class="profileButton" id="enableCloudBtn" style="margin-top:12px;">
+      Enable Cloud Sync
+    </button>
+  </div>
+</section>
+
+<!-- Hidden file input for import -->
+<input type="file" id="importFileInput" accept=".json" style="display:none;">
+
+<script src="js/config.js"></script>
+<script src="js/constants.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/supabase.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/offline.js"></script>
+<script src="js/sync.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/profile.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    Logit.ProfilePage.init();
+  });
+</script>
+</body>
+</html>
