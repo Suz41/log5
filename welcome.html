@@ -24,10 +24,15 @@
     </div>
 
     <div class="authForm" style="gap: 12px;">
+      <input type="text" placeholder="Username" id="authUsername" class="authInput" style="display:none;">
       <input type="email" placeholder="Email" id="authEmail" class="authInput">
-      <input type="password" placeholder="Password" id="authPassword" class="authInput">
+      <div style="position:relative;">
+        <input type="password" placeholder="Password" id="authPassword" class="authInput" style="width:100%;padding-right:40px;">
+        <button type="button" id="togglePassword" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;">&#128065;</button>
+      </div>
       <button class="btn btnPrimary" id="signInBtn">Sign In</button>
       <button class="btn btnSecondary" id="createAccountBtn">Create Account</button>
+      <button class="btn btnLink" id="forgotPasswordBtn" style="font-size:13px;color:var(--accent);">Forgot Password?</button>
       <div style="text-align:center;margin-top:4px;">
         <span class="smallText" id="authMessage" style="color:var(--accent);"></span>
       </div>
