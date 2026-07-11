@@ -8,7 +8,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/main.css?v=9">
 <link rel="stylesheet" href="css/components.css?v=9">
-<link rel="stylesheet" href="css/auth.css?v=1">
+<link rel="stylesheet" href="css/auth.css?v=10">
+<link rel="stylesheet" href="css/desktop.css?v=9">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
@@ -32,8 +33,9 @@
 </header>
 
 <section class="profileContainer" id="profileContainer">
+
   <!-- Profile Header -->
-  <div class="profileHeader">
+  <div class="profileCard profileHeader">
     <div class="profileAvatar" id="profileAvatar">👤</div>
     <div class="profileInfo">
       <h2 class="profileName" id="profileName">Loading...</h2>
@@ -42,62 +44,56 @@
   </div>
 
   <!-- Sync Status -->
-  <div class="profileSection">
+  <div class="profileCard">
     <div class="profileSectionTitle">Sync Status</div>
-    <div class="profileCard">
-      <div class="profileRow">
-        <span class="profileLabel">Status</span>
-        <div class="syncStatus" id="syncStatusBadge">
-          <span class="syncDot"></span>
-          <span id="syncStatusText">Synced</span>
-        </div>
+    <div class="profileRow">
+      <span class="profileLabel">Status</span>
+      <div class="syncStatus" id="syncStatusBadge">
+        <span class="syncDot"></span>
+        <span id="syncStatusText">Synced</span>
       </div>
-      <div class="profileRow">
-        <span class="profileLabel">Last Synced</span>
-        <span class="profileValue" id="lastSyncedTime">-</span>
-      </div>
-      <div class="profileRow">
-        <span class="profileLabel">Pending Changes</span>
-        <span class="profileValue" id="pendingChanges">0</span>
-      </div>
+    </div>
+    <div class="profileRow">
+      <span class="profileLabel">Last Synced</span>
+      <span class="profileValue" id="lastSyncedTime">-</span>
+    </div>
+    <div class="profileRow">
+      <span class="profileLabel">Pending Changes</span>
+      <span class="profileValue" id="pendingChanges">0</span>
     </div>
     <button class="profileButton" id="manualSyncBtn" style="margin-top:12px;">
       Manual Sync
     </button>
   </div>
 
-  <!-- Storage Usage -->
-  <div class="profileSection">
+  <!-- Storage -->
+  <div class="profileCard">
     <div class="profileSectionTitle">Storage</div>
-    <div class="profileCard">
-      <div class="profileRow">
-        <span class="profileLabel">Local Storage</span>
-        <span class="profileValue" id="localStorageUsage">-</span>
-      </div>
-      <div class="profileRow">
-        <span class="profileLabel">Movies</span>
-        <span class="profileValue" id="moviesCount">0</span>
-      </div>
+    <div class="profileRow">
+      <span class="profileLabel">Local Storage</span>
+      <span class="profileValue" id="localStorageUsage">-</span>
+    </div>
+    <div class="profileRow">
+      <span class="profileLabel">Movies</span>
+      <span class="profileValue" id="moviesCount">0</span>
     </div>
   </div>
 
   <!-- Sync Settings -->
-  <div class="profileSection">
+  <div class="profileCard">
     <div class="profileSectionTitle">Sync Settings</div>
-    <div class="profileCard">
-      <div class="profileRow">
-        <span class="profileLabel">Auto Sync</span>
-        <button class="settingToggle" id="autoSyncToggle"></button>
-      </div>
-      <div class="profileRow" style="border-bottom:none;">
-        <span class="profileLabel">Sync on Wi-Fi only</span>
-        <button class="settingToggle" id="wifiOnlyToggle"></button>
-      </div>
+    <div class="profileRow">
+      <span class="profileLabel">Auto Sync</span>
+      <button class="settingToggle" id="autoSyncToggle"></button>
+    </div>
+    <div class="profileRow">
+      <span class="profileLabel">Sync on Wi-Fi only</span>
+      <button class="settingToggle" id="wifiOnlyToggle"></button>
     </div>
   </div>
 
   <!-- Data Management -->
-  <div class="profileSection">
+  <div class="profileCard">
     <div class="profileSectionTitle">Data Management</div>
     <button class="profileButton" id="exportDataBtn">
       Export as JSON
@@ -111,7 +107,7 @@
   </div>
 
   <!-- Account -->
-  <div class="profileSection">
+  <div class="profileCard">
     <div class="profileSectionTitle">Account</div>
     <button class="profileButton" id="signOutBtn">
       Sign Out
@@ -121,17 +117,17 @@
     </button>
   </div>
 
-  <!-- Offline Mode Footer -->
-  <div class="profileSection" id="offlineModeSection" style="display:none;">
+  <!-- Offline Mode -->
+  <div class="profileCard offlineSection" id="offlineModeSection" style="display:none;">
     <div class="profileSectionTitle">Offline Mode</div>
-    <p class="smallText" style="margin:0;">You're currently using Log!t in offline mode. Your data is stored locally on this device.</p>
+    <p class="smallText" style="margin:0;color:var(--muted);">You're currently using Log!t in offline mode.</p>
     <button class="profileButton" id="enableCloudBtn" style="margin-top:12px;">
       Enable Cloud Sync
     </button>
   </div>
+
 </section>
 
-<!-- Hidden file input for import -->
 <input type="file" id="importFileInput" accept=".json" style="display:none;">
 
 <script src="js/config.js"></script>
