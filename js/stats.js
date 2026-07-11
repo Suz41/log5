@@ -1,0 +1,361 @@
+window.Logit = window.Logit || {};
+
+Logit.StatsPage = {
+  init() {
+    const API = Logit.Config.getApiKey();
+    const esc = Logit.Utils.esc;
+    const $ = Logit.Utils.byId;
+
+    const movies = Logit.Storage.loadMovies();
+    const stats = Logit.StatUtils.aggregate(movies);
+
+    // ========= HERO BOX =========
+    $('movieCount').innerText = movies.length;
+    $('ratingAvg').innerText = movies.length ? (movies.reduce((a, b) => a + (Number(b.r) || 0), 0) / movies.length).toFixed(1) : "0.0";
+
+    const totalRuntime = movies.reduce((a, b) => a + (Number(b.rt) || 0), 0);
+    const timeData = Logit.StatUtils.formatTime(totalRuntime);
+    $('timeCount').innerHTML = `
+      <div style="font-size:22px;font-weight:700;line-height:1;color:#fff;">
+        ${timeData.main}
+      </div>
+      <div class="timeSub">
+        ${timeData.sub}
+      </div>
+    `;
+
+    // ========= PEOPLE =========
+    const topDirectors = Object.entries(stats.directorCount)
+      .sort((a, b) => b[1].movies.size - a[1].movies.size)
+      .slice(0, 5);
+
+    const topActors = Object.entries(stats.actorCount)
+      .sort((a, b) => b[1].movies.size - a[1].movies.size)
+      .slice(0, 5);
+
+    async function fetchPersonImage(name) {
+      try {
+        const res = await fetch(`https://api.themoviedb.org/3/search/person?api_key=${API}&query=${encodeURIComponent(name)}`);
+        const data = await res.json();
+        const path = data.results?.[0]?.profile_path;
+        return path ? `https://image.tmdb.org/t/p/w185${path}` : 'https://placehold.co/80x80/111/666?text=%20';
+      } catch (e) {
+        return 'https://placehold.co/80x80/111/666?text=%20';
+      }
+    }
+
+    async function renderPeople() {
+      const dList = $('directorList');
+      const aList = $('actorList');
+
+      const directorImagePromises = topDirectors.map(([director, data]) =>
+        data.img ? Promise.resolve(data.img) : fetchPersonImage(director)
+      );
+      const actorImagePromises = topActors.map(([actor, data]) =>
+        data.img ? Promise.resolve(data.img) : fetchPersonImage(actor)
+      );
+
+      const [directorImages, actorImages] = await Promise.all([
+        Promise.all(directorImagePromises),
+        Promise.all(actorImagePromises)
+      ]);
+
+      dList.innerHTML = topDirectors.map(([director, data], index) => {
+        const moviesHtml = Logit.Utils.renderMovieChips([...data.movies]);
+        return Logit.Utils.renderPersonCard(director, directorImages[index], data.movies.size, moviesHtml);
+      }).join('');
+
+      aList.innerHTML = topActors.map(([actor, data], index) => {
+        const moviesHtml = Logit.Utils.renderMovieChips([...data.movies]);
+        return Logit.Utils.renderPersonCard(actor, actorImages[index], data.movies.size, moviesHtml);
+      }).join('');
+    }
+
+    renderPeople();
+
+    // ========= META SECTIONS =========
+    function renderMetaSection(wrapEl, totalEl, entries, moviesMap, labelFn) {
+      totalEl.innerText = entries.length;
+      if (entries.length === 0) {
+        wrapEl.innerHTML = '<div class="empty">No data yet</div>';
+        return;
+      }
+      wrapEl.innerHTML = entries.map(function(entry) {
+        const name = labelFn(entry);
+        const count = entry[1];
+        const moviesHtml = Logit.Utils.renderMetaMovies(moviesMap[entry[0]] || []);
+        return Logit.Utils.renderMetaItem(name, count, moviesHtml);
+      }).join('');
+    }
+
+    // Genres
+    const genreEntries = Object.entries(stats.genreCount).sort((a, b) => b[1] - a[1]);
+    renderMetaSection($('genreWrap'), $('genreTotal'), genreEntries, stats.genreMovies, function(e) { return e[0]; });
+
+    // Languages
+    const langEntries = Object.entries(stats.langCount).sort((a, b) => b[1] - a[1]);
+    renderMetaSection($('langWrap'), $('langTotal'), langEntries, stats.langMovies, function(e) {
+      return Logit.LANG_MAP[e[0].toLowerCase()] || e[0].toUpperCase();
+    });
+
+    // Regions
+    const regionEntries = Object.entries(stats.countryCount).sort((a, b) => b[1] - a[1]);
+    renderMetaSection($('regionWrap'), $('regionTotal'), regionEntries, stats.regionMovies, function(e) { return e[0]; });
+
+    // Rewatched
+    const rewatched = Object.entries(stats.rewatchMap)
+      .filter(function(e) { return e[1].count > 1; })
+      .sort(function(a, b) { return b[1].count - a[1].count; })
+      .slice(0, 10);
+
+    $('rewatchTotal').innerText = rewatched.length;
+    const rewatchWrap = $('rewatchWrap');
+    if (rewatched.length === 0) {
+      rewatchWrap.innerHTML = '<div class="empty">No rewatches yet</div>';
+    } else {
+      rewatchWrap.innerHTML = rewatched.map(function(entry) {
+        const moviesHtml = Logit.Utils.renderMetaMovies(entry[1].dates || []);
+        return Logit.Utils.renderMetaItem(entry[0], entry[1].count + 'x', moviesHtml);
+      }).join('');
+    }
+
+    // Decades
+    const decades = Object.entries(stats.decadeCount).sort(function(a, b) {
+      return parseInt(b[0]) - parseInt(a[0]);
+    });
+    renderMetaSection($('yearWrap'), $('yearTotal'), decades, stats.decadeMovies, function(e) { return e[0]; });
+
+    // ========= COLLAPSIBLE TOGGLES =========
+    document.querySelectorAll('.metaCard.toggleable').forEach(function(card) {
+      const head = card.querySelector('.metaHead');
+      if (head) {
+        head.onclick = function() {
+          card.classList.toggle('active');
+        };
+      }
+    });
+
+    // ========= LOCAL FUNCTIONS =========
+    function toggleRuntime() {
+      const timeSub = document.querySelector('#timeCount .timeSub');
+      if (timeSub) {
+        const visible = timeSub.style.display === 'block';
+        timeSub.style.display = visible ? 'none' : 'block';
+      }
+    }
+
+    function openImportModal() {
+      Logit.Utils.openModal($('importModal'));
+      $('importText').value = '';
+      $('importStatus').textContent = '';
+      $('importText').focus();
+    }
+
+    function closeImportModal() {
+      Logit.Utils.closeModal($('importModal'));
+      $('importText').value = '';
+      $('importStatus').textContent = '';
+    }
+
+    function exportMovies() {
+      Logit.Utils.openModal($('exportModal'));
+    }
+
+    function closeExportModal() {
+      Logit.Utils.closeModal($('exportModal'));
+    }
+
+    function doExport(format) {
+      Logit.Export.doExport(movies, format, closeExportModal);
+    }
+
+    function setApiKey() {
+      const key = prompt('Enter your TMDB API Key:', Logit.Config.getApiKey());
+      if (key !== null) {
+        Logit.Config.setApiKey(key);
+        location.reload();
+      }
+    }
+
+    // ========= EVENT LISTENERS =========
+    const runtimeBox = $('runtimeBox');
+    if (runtimeBox) runtimeBox.addEventListener('click', toggleRuntime);
+
+    const exportBtn = document.querySelector('[data-action="export"]');
+    if (exportBtn) exportBtn.addEventListener('click', exportMovies);
+
+    const importBtn = document.querySelector('[data-action="import"]');
+    if (importBtn) importBtn.addEventListener('click', openImportModal);
+
+    const importCloseBtn = $('importModalClose');
+    if (importCloseBtn) importCloseBtn.addEventListener('click', closeImportModal);
+
+    const exportCloseBtn = $('exportCancelBtn');
+    if (exportCloseBtn) exportCloseBtn.addEventListener('click', closeExportModal);
+
+    const exportJsonBtn = $('exportJsonBtn');
+    if (exportJsonBtn) exportJsonBtn.addEventListener('click', function() { doExport('json'); });
+
+    const exportTxtBtn = $('exportTxtBtn');
+    if (exportTxtBtn) exportTxtBtn.addEventListener('click', function() { doExport('txt'); });
+
+    const aboutBtn = document.querySelector('[data-action="about"]');
+    if (aboutBtn) aboutBtn.addEventListener('click', function() { window.location.href = 'about.html'; });
+
+    // ========= IMPORT LOGIC =========
+    const fileInput = $('fileInput');
+    if (fileInput) {
+      fileInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(ev) {
+          $('importText').value = ev.target.result;
+          $('importStatus').textContent = 'File loaded: ' + file.name;
+        };
+        reader.readAsText(file);
+      });
+    }
+
+    const importStartBtn = $('importStartBtn');
+    if (importStartBtn) {
+      importStartBtn.onclick = async function() {
+        const text = $('importText').value.trim();
+        if (!text) return;
+
+        /* JSON Import */
+        if (text.charAt(0) === '[') {
+          try {
+            const parsed = JSON.parse(text);
+            if (!Array.isArray(parsed)) throw new Error();
+
+            if (Logit.Import.isSlimExport(parsed)) {
+              if (!API) {
+                $('importStatus').textContent = 'TMDB API key required to import slim export. Set it from main page.';
+                return;
+              }
+              importStartBtn.disabled = true;
+              const statusEl = $('importStatus');
+              const existingTmdbIds = new Set(movies.map(function(m) { return m.tmdb_id || ''; }));
+              const existingIds = new Set(movies.map(function(m) { return m.id; }));
+              let imported = 0;
+              let failed = 0;
+              const total = parsed.length;
+
+              for (let i = 0; i < parsed.length; i++) {
+                const entry = parsed[i];
+                if ((!entry.t && !entry.id) || !entry.tmdb_id) { failed++; continue; }
+                if (existingIds.has(entry.id) || existingTmdbIds.has(entry.tmdb_id)) { continue; }
+
+                statusEl.textContent = 'Fetching ' + (i + 1) + '/' + total + ': ' + entry.t;
+
+                try {
+                  const detail = await Logit.Search.tmdb('https://api.themoviedb.org/3/movie/' + entry.tmdb_id + '?api_key=' + API + '&append_to_response=credits,images');
+                  if (!detail) { failed++; continue; }
+
+                  const watch = entry.w || '1st Watch';
+
+                  movies.unshift(Logit.MovieFactory.fromTMDB(detail, entry.r || 3, watch, entry.d || Logit.Import.normalizeDate(null)));
+                  imported++;
+                } catch (e) { failed++; }
+              }
+
+              Logit.Storage.saveMovies(movies);
+              statusEl.textContent = imported + ' imported' + (failed > 0 ? ', ' + failed + ' failed' : '');
+              importStartBtn.disabled = false;
+              setTimeout(function() { closeImportModal(); location.reload(); }, 1500);
+              return;
+            }
+
+            let count = 0;
+            const existingIds = new Set(movies.map(function(m) { return m.id; }));
+            const existingTmdbFull = new Set(movies.map(function(m) { return m.tmdb_id || ''; }));
+            parsed.forEach(function(m) {
+              if (!m.t && !m.id) return;
+              if (existingIds.has(m.id)) return;
+              if (m.tmdb_id && existingTmdbFull.has(m.tmdb_id)) return;
+              movies.unshift(m);
+              count++;
+            });
+            Logit.Storage.saveMovies(movies);
+            $('importStatus').textContent = count + ' imported from JSON';
+            setTimeout(function() { closeImportModal(); location.reload(); }, 1500);
+            return;
+          } catch (e) {
+            $('importStatus').textContent = 'Invalid JSON format';
+            return;
+          }
+        }
+
+        const lines = text.split('\n').filter(function(l) { return l.trim().length > 0; });
+        if (lines.length === 0) return;
+
+        if (!API) {
+          $('importStatus').textContent = 'TMDB import requires an API key. Set it from the main page.';
+          return;
+        }
+
+        importStartBtn.disabled = true;
+        const statusEl = $('importStatus');
+        let imported = 0;
+        let failed = 0;
+        const total = lines.length;
+
+        for (let i = 0; i < lines.length; i++) {
+          const entry = Logit.Import.parseLine(lines[i]);
+          if (!entry) { failed++; continue; }
+
+          statusEl.textContent = 'Importing ' + (i + 1) + '/' + total + ': ' + (entry.title || entry.tmdbId || entry.imdbId);
+
+          try {
+            let detail = null;
+
+            if (entry.tmdbId) {
+              detail = await Logit.Search.tmdb('https://api.themoviedb.org/3/movie/' + entry.tmdbId + '?api_key=' + API + '&append_to_response=credits,images');
+            } else if (entry.imdbId) {
+              const findData = await Logit.Search.tmdb('https://api.themoviedb.org/3/find/' + entry.imdbId + '?api_key=' + API + '&external_source=imdb_id');
+              if (findData && findData.movie_results && findData.movie_results.length > 0) {
+                const foundId = findData.movie_results[0].id;
+                detail = await Logit.Search.tmdb('https://api.themoviedb.org/3/movie/' + foundId + '?api_key=' + API + '&append_to_response=credits,images');
+              }
+            } else {
+              let searchUrl = 'https://api.themoviedb.org/3/search/movie?api_key=' + API + '&query=' + encodeURIComponent(entry.title);
+              if (entry.year) searchUrl += '&year=' + entry.year;
+              const searchData = await Logit.Search.tmdb(searchUrl);
+              if (!searchData || !searchData.results || searchData.results.length === 0) { failed++; continue; }
+
+              const titleLow = entry.title.toLowerCase();
+              let candidates = searchData.results.filter(function(m) { return m.poster_path; });
+              if (candidates.length === 0) candidates = searchData.results;
+
+              let result = candidates[0];
+              for (let ci = 1; ci < candidates.length; ci++) {
+                const c = candidates[ci];
+                const cTitle = (c.title || '').toLowerCase();
+                if (cTitle === titleLow && (result.title || '').toLowerCase() !== titleLow) { result = c; continue; }
+                if (entry.year && c.release_date && result.release_date) {
+                  const cYear = c.release_date.slice(0, 4);
+                  const rYear = result.release_date.slice(0, 4);
+                  if (cYear === entry.year && rYear !== entry.year) { result = c; }
+                }
+              }
+              detail = await Logit.Search.tmdb('https://api.themoviedb.org/3/movie/' + result.id + '?api_key=' + API + '&append_to_response=credits,images');
+            }
+            if (!detail) { failed++; continue; }
+
+            const watch = entry.rewatch ? 'Rewatch' : Logit.Movies.watchType(movies, detail.title || '');
+
+            movies.unshift(Logit.MovieFactory.fromTMDB(detail, entry.rating || 3, watch, Logit.Import.normalizeDate(entry.date)));
+
+            imported++;
+          } catch (e) { failed++; }
+        }
+
+        Logit.Storage.saveMovies(movies);
+        statusEl.textContent = imported + ' imported' + (failed > 0 ? ', ' + failed + ' failed' : '');
+        importStartBtn.disabled = false;
+        setTimeout(function() { closeImportModal(); location.reload(); }, 1500);
+      };
+    }
+  }
+};
