@@ -14,14 +14,20 @@ Logit.ProfilePage = {
     }
   },
 
-  checkAuth() {
+  async checkAuth() {
     const isOffline = localStorage.getItem('logit_offline_mode') === 'true';
     this._user = null;
     try {
-      const session = Logit.Supabase.getSession && Logit.Supabase.getClient();
-      // don't block on async — just read localStorage state
+      const client = Logit.Supabase.getClient();
+      if (client) {
+        const { data: { session } } = await client.auth.getSession();
+        if (session && session.user) {
+          this._user = session.user;
+          localStorage.setItem('logit_offline_mode', 'false');
+        }
+      }
     } catch (e) {}
-    this.showOfflineModeUI(isOffline);
+    this.showOfflineModeUI(!this._user);
   },
 
   loadProfile() {
