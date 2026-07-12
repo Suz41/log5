@@ -27,15 +27,38 @@ Logit.Storage = {
   /** @param {Array} movies */
   saveMovies(movies) {
     try {
-      // Set updated_at on all movies for sync conflict detection
       const now = new Date().toISOString();
       movies.forEach(function(m) {
         m.updated_at = now;
       });
       localStorage.setItem('movies', JSON.stringify(movies));
+
+      // Auto-push to cloud if logged in
+      if (!Logit.Auth.isOfflineMode()) {
+        this._pushToCloud(movies);
+      }
     } catch (e) {
       console.error('Failed to save movies to localStorage:', e);
       alert('Storage is full or inaccessible! Changes could not be saved.');
+    }
+  },
+
+  /** Push movies to cloud in background */
+  async _pushToCloud(movies) {
+    try {
+      const client = Logit.Supabase.getClient();
+      const userId = localStorage.getItem('logit_user_id');
+      if (!client || !userId) return;
+
+      const moviesToInsert = movies.map(m => ({
+        ...m,
+        user_id: userId,
+        updated_at: m.updated_at || new Date().toISOString()
+      }));
+
+      await client.from('movies').upsert(moviesToInsert, { onConflict: 'id' });
+    } catch (e) {
+      console.error('Auto-push failed:', e);
     }
   },
 

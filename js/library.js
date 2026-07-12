@@ -124,8 +124,42 @@ Logit.LibraryPage = {
       library.append(fragment);
     }
 
-    state.movies = Logit.Storage.loadMovies();
-    renderMovies();
+    // Load movies — pull from cloud first if logged in
+    async function loadAndRender() {
+      if (!Logit.Auth.isOfflineMode()) {
+        try {
+          const client = Logit.Supabase.getClient();
+          const userId = localStorage.getItem('logit_user_id');
+          if (client && userId) {
+            const { data: remoteMovies } = await client
+              .from('movies')
+              .select('*')
+              .eq('user_id', userId);
+
+            if (remoteMovies && remoteMovies.length > 0) {
+              const localMovies = Logit.Storage.loadMovies();
+              const localMap = new Map(localMovies.map(m => [m.id, m]));
+
+              for (const rm of remoteMovies) {
+                const sanitized = { id: rm.id, t: rm.t, yr: rm.yr, rt: rm.rt, g: rm.g, dr: rm.dr, c: rm.c, lg: rm.lg, ct: rm.ct, r: rm.r, w: rm.w, d: rm.d, sp: rm.sp, tmdb_id: rm.tmdb_id, imdb_id: rm.imdb_id, updated_at: rm.updated_at };
+                const local = localMap.get(rm.id);
+                if (!local) {
+                  localMovies.push(sanitized);
+                } else {
+                  const rTime = new Date(rm.updated_at || 0).getTime();
+                  const lTime = new Date(local.updated_at || 0).getTime();
+                  if (rTime > lTime) Object.assign(local, sanitized);
+                }
+              }
+              Logit.Storage.saveMovies(localMovies);
+            }
+          }
+        } catch (e) { console.error('Cloud pull failed:', e); }
+      }
+      state.movies = Logit.Storage.loadMovies();
+      renderMovies();
+    }
+    loadAndRender();
 
     // ========= SETTINGS PANEL =========
     const settingsBtn = $('settingsBtn');
