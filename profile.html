@@ -111,12 +111,49 @@
   </div>
 
   <div class="profileCard">
+    <div class="profileSectionTitle">Your Stats</div>
+    <div class="profileRow">
+      <span class="profileLabel">Total Movies</span>
+      <span class="profileValue" id="statsTotal">0</span>
+    </div>
+    <div class="profileRow">
+      <span class="profileLabel">Average Rating</span>
+      <span class="profileValue" id="statsAvg">-</span>
+    </div>
+    <div class="profileRow">
+      <span class="profileLabel">Rewatches</span>
+      <span class="profileValue" id="statsRewatch">0</span>
+    </div>
+  </div>
+
+  <div class="profileCard">
+    <div class="profileSectionTitle">TMDB API Key</div>
+    <div class="profileRow">
+      <span class="profileLabel">Status</span>
+      <span class="profileValue" id="apiKeyStatus">-</span>
+    </div>
+    <button class="profileButton" id="changeApiKeyBtn">
+      Change API Key
+    </button>
+  </div>
+
+  <div class="profileCard">
     <div class="profileSectionTitle">Account</div>
+    <button class="profileButton" id="changePasswordBtn">
+      Change Password
+    </button>
     <button class="profileButton" id="signOutBtn">
       Sign Out
     </button>
     <button class="profileButton danger" id="deleteAccountBtn">
       Delete Account
+    </button>
+  </div>
+
+  <div class="profileCard">
+    <div class="profileSectionTitle">Danger Zone</div>
+    <button class="profileButton danger" id="clearDataBtn">
+      Clear All Local Data
     </button>
   </div>
 

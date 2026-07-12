@@ -59,7 +59,32 @@ Logit.ProfilePage = {
       const usageEl = document.getElementById('localStorageUsage');
       if (countEl) countEl.textContent = movies.length;
       if (usageEl) usageEl.textContent = formatted.val + ' ' + formatted.unit;
+
+      // Update stats
+      const totalEl = document.getElementById('statsTotal');
+      const avgEl = document.getElementById('statsAvg');
+      const rewatchEl = document.getElementById('statsRewatch');
+      if (totalEl) totalEl.textContent = movies.length;
+      if (avgEl) {
+        const rated = movies.filter(m => m.r > 0);
+        const avg = rated.length > 0 ? (rated.reduce((s, m) => s + Number(m.r), 0) / rated.length).toFixed(1) : '-';
+        avgEl.textContent = avg;
+      }
+      if (rewatchEl) {
+        const rewatches = movies.filter(m => m.w && m.w.toString().includes('Rewatch'));
+        rewatchEl.textContent = rewatches.length;
+      }
+
+      this.updateApiKeyStatus();
     } catch (e) { console.error('Storage info error:', e); }
+  },
+
+  updateApiKeyStatus() {
+    const statusEl = document.getElementById('apiKeyStatus');
+    if (!statusEl) return;
+    const key = Logit.Config.getApiKey();
+    statusEl.textContent = key ? 'Configured' : 'Not set';
+    statusEl.style.color = key ? 'var(--green)' : 'var(--red)';
   },
 
   updateSyncStatus() {
@@ -286,6 +311,39 @@ Logit.ProfilePage = {
 
     const enableCloudBtn = $('enableCloudBtn');
     if (enableCloudBtn) enableCloudBtn.addEventListener('click', () => { window.location.href = 'welcome.html'; });
+
+    // Change Password
+    const changePasswordBtn = $('changePasswordBtn');
+    if (changePasswordBtn) changePasswordBtn.addEventListener('click', () => {
+      const newPass = prompt('Enter new password (6+ characters):');
+      if (!newPass || newPass.length < 6) { alert('Password must be 6+ characters'); return; }
+      const client = Logit.Supabase.getClient();
+      if (!client) { alert('Not connected'); return; }
+      client.auth.updateUser({ password: newPass }).then(res => {
+        if (res.error) alert(res.error.message);
+        else alert('Password updated!');
+      });
+    });
+
+    // Change API Key
+    const changeApiKeyBtn = $('changeApiKeyBtn');
+    if (changeApiKeyBtn) changeApiKeyBtn.addEventListener('click', () => {
+      const key = prompt('Enter TMDB API Key:', Logit.Config.getApiKey());
+      if (key !== null) {
+        Logit.Config.setApiKey(key);
+        this.updateApiKeyStatus();
+      }
+    });
+
+    // Clear All Data
+    const clearDataBtn = $('clearDataBtn');
+    if (clearDataBtn) clearDataBtn.addEventListener('click', () => {
+      if (!confirm('Delete ALL local data? This cannot be undone.')) return;
+      if (!confirm('Are you really sure?')) return;
+      localStorage.clear();
+      alert('All data cleared.');
+      location.reload();
+    });
 
     // Settings toggles
     const autoSyncToggle = $('autoSyncToggle');
