@@ -119,7 +119,7 @@ Logit.Auth = {
     if (!client) { this.setMessage('Cloud not configured'); return; }
     try {
       const { error } = await client.auth.resetPasswordForEmail(email, {
-        redirectTo: window.location.origin + '/welcome.html'
+        redirectTo: 'https://suz41.github.io/log5/welcome.html'
       });
       if (error) { this.setMessage(error.message); return; }
       this.setMessage('Reset link sent! Check your email.');
@@ -170,7 +170,7 @@ Logit.Auth = {
         email,
         password,
         options: {
-          emailRedirectTo: window.location.origin + '/index.html',
+          emailRedirectTo: 'https://suz41.github.io/log5/index.html',
           data: { username }
         }
       });
