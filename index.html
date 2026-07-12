@@ -205,6 +205,17 @@
     Logit.Supabase.init();
     Logit.Sync.init();
 
+    // Heartbeat ping — keeps Supabase project active
+    try {
+      const client = Logit.Supabase.getClient();
+      if (client) {
+        const userId = localStorage.getItem('logit_user_id');
+        if (userId) {
+          client.from('movies').select('id').eq('user_id', userId).limit(1);
+        }
+      }
+    } catch (e) {}
+
     const profileBtn = document.getElementById('profileBtn');
     if (profileBtn) {
       profileBtn.addEventListener('click', () => {
