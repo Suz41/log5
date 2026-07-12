@@ -263,6 +263,7 @@ Logit.StatsPage = {
               Logit.Storage.saveMovies(movies);
               statusEl.textContent = imported + ' imported' + (failed > 0 ? ', ' + failed + ' failed' : '');
               importStartBtn.disabled = false;
+              try { await Logit.Sync.pushToCloud(); } catch (e) {}
               setTimeout(function() { closeImportModal(); location.reload(); }, 1500);
               return;
             }
@@ -279,6 +280,7 @@ Logit.StatsPage = {
             });
             Logit.Storage.saveMovies(movies);
             $('importStatus').textContent = count + ' imported from JSON';
+            try { await Logit.Sync.pushToCloud(); } catch (e) {}
             setTimeout(function() { closeImportModal(); location.reload(); }, 1500);
             return;
           } catch (e) {
@@ -354,6 +356,8 @@ Logit.StatsPage = {
         Logit.Storage.saveMovies(movies);
         statusEl.textContent = imported + ' imported' + (failed > 0 ? ', ' + failed + ' failed' : '');
         importStartBtn.disabled = false;
+        // Push to cloud before reloading
+        try { await Logit.Sync.pushToCloud(); } catch (e) {}
         setTimeout(function() { closeImportModal(); location.reload(); }, 1500);
       };
     }
