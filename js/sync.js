@@ -289,7 +289,7 @@ Logit.Sync = {
    * @returns {Object}
    */
   sanitizeRemoteMovie(movie) {
-    const { user_id, created_at, ...localMovie } = movie;
+    const { user_id, created_at, updated_at, ...localMovie } = movie;
     return localMovie;
   },
 
