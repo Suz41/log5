@@ -251,29 +251,31 @@ Logit.ProfilePage = {
         } catch (err) { if (statusEl) statusEl.textContent = 'Invalid JSON'; return; }
       }
 
-      if (!API) { if (statusEl) statusEl.textContent = 'TMDB API key required.'; return; }
+      if (!API) { if (statusEl) statusEl.textContent = 'TMDB API key required. Set it from the main page.'; return; }
       const lines = text.split('\n').filter(l => l.trim());
-      if (lines.length === 0) return;
+      if (lines.length === 0) { if (statusEl) statusEl.textContent = 'No valid lines found'; return; }
       btn.disabled = true;
       let imported = 0, failed = 0;
       const existingTmdbIds = new Set(movies.map(m => m.tmdb_id || ''));
       for (let i = 0; i < lines.length; i++) {
         const entry = Logit.Import.parseLine(lines[i]);
         if (!entry) { failed++; continue; }
-        if (statusEl) statusEl.textContent = 'Importing ' + (i + 1) + '/' + lines.length;
+        if (statusEl) statusEl.textContent = 'Importing ' + (i + 1) + '/' + lines.length + ': ' + (entry.title || entry.tmdbId || entry.imdbId);
         try {
           let detail = null;
           if (entry.tmdbId) {
             detail = await Logit.Search.tmdb('https://api.themoviedb.org/3/movie/' + entry.tmdbId + '?api_key=' + API + '&append_to_response=credits,images');
           } else if (entry.imdbId) {
             const fd = await Logit.Search.tmdb('https://api.themoviedb.org/3/find/' + entry.imdbId + '?api_key=' + API + '&external_source=imdb_id');
-            if (fd?.movie_results?.[0]) detail = await Logit.Search.tmdb('https://api.themoviedb.org/3/movie/' + fd.movie_results[0].id + '?api_key=' + API + '&append_to_response=credits,images');
+            if (fd && fd.movie_results && fd.movie_results.length > 0) {
+              detail = await Logit.Search.tmdb('https://api.themoviedb.org/3/movie/' + fd.movie_results[0].id + '?api_key=' + API + '&append_to_response=credits,images');
+            }
           } else {
             let url = 'https://api.themoviedb.org/3/search/movie?api_key=' + API + '&query=' + encodeURIComponent(entry.title);
             if (entry.year) url += '&year=' + entry.year;
             const sd = await Logit.Search.tmdb(url);
-            if (!sd?.results?.length) { failed++; continue; }
-            const c = sd.results.filter(m => m.poster_path);
+            if (!sd || !sd.results || sd.results.length === 0) { failed++; continue; }
+            const c = sd.results.filter(function(m) { return m.poster_path; });
             let r = (c.length ? c : sd.results)[0];
             detail = await Logit.Search.tmdb('https://api.themoviedb.org/3/movie/' + r.id + '?api_key=' + API + '&append_to_response=credits,images');
           }
