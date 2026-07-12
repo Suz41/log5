@@ -62,9 +62,8 @@ Logit.ProfilePage = {
       const countEl = document.getElementById('moviesCount');
       const usageEl = document.getElementById('localStorageUsage');
       if (countEl) countEl.textContent = movies.length;
-      if (usageEl) usageEl.textContent = formatted.val + ' ' + formatted.unit;
+      if (usageEl) usageEl.textContent = formatted.val + ' ' + formatted.unit + ' / 5 MB';
 
-      // Cloud storage
       this.updateCloudStorage();
     } catch (e) {}
   },
@@ -77,7 +76,7 @@ Logit.ProfilePage = {
       const userId = localStorage.getItem('logit_user_id');
       if (!client || !userId) {
         if (cloudCountEl) cloudCountEl.textContent = '-';
-        if (cloudUsageEl) cloudUsageEl.textContent = '-';
+        if (cloudUsageEl) cloudUsageEl.textContent = '- / 500 MB';
         return;
       }
       const { data } = await client.from('movies').select('id, t, sp, g, c, dr').eq('user_id', userId);
@@ -85,11 +84,11 @@ Logit.ProfilePage = {
         const bytes = new TextEncoder().encode(JSON.stringify(data)).length;
         const formatted = Logit.Storage.formatBytes(bytes);
         if (cloudCountEl) cloudCountEl.textContent = data.length;
-        if (cloudUsageEl) cloudUsageEl.textContent = formatted.val + ' ' + formatted.unit;
+        if (cloudUsageEl) cloudUsageEl.textContent = formatted.val + ' ' + formatted.unit + ' / 500 MB';
       }
     } catch (e) {
       if (cloudCountEl) cloudCountEl.textContent = '-';
-      if (cloudUsageEl) cloudUsageEl.textContent = '-';
+      if (cloudUsageEl) cloudUsageEl.textContent = '- / 500 MB';
     }
   },
 
