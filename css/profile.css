@@ -567,6 +567,7 @@
 
 .directorModal.active {
   display: flex;
+  pointer-events: auto;
 }
 
 .directorSheet {
@@ -575,6 +576,7 @@
   max-height: 80vh;
   background: var(--surface);
   border: 0.5px solid var(--border);
+  pointer-events: auto;
   border-radius: 16px;
   padding: 20px;
   overflow: hidden;
