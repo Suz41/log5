@@ -26,7 +26,7 @@ Logit.LibraryPage = {
     const state = {
       movies: [],
       current: null,
-      openMonths: new Set()
+      openMonths: new Set(JSON.parse(localStorage.getItem('logit_open_months') || '[]'))
     };
 
     const library = $('library');
@@ -80,6 +80,11 @@ Logit.LibraryPage = {
         return new Date(b) - new Date(a);
       });
 
+      // Default to last month open if no months saved
+      if (state.openMonths.size === 0 && keys.length > 0) {
+        state.openMonths.add(keys[0]);
+      }
+
       const fragment = document.createDocumentFragment();
 
       keys.forEach(function(key) {
@@ -116,6 +121,7 @@ Logit.LibraryPage = {
           } else {
             state.openMonths.delete(key);
           }
+          localStorage.setItem('logit_open_months', JSON.stringify([...state.openMonths]));
         };
 
         fragment.append(section);
@@ -154,9 +160,9 @@ Logit.LibraryPage = {
     // ========= GRID COLS =========
     const isPC = window.innerWidth >= 1024;
     const gridMin = isPC ? 10 : 4;
-    const gridMax = isPC ? 16 : 10;
+    const gridMax = isPC ? 20 : 10;
     const gridDefault = isPC ? 10 : 4;
-    let gridCount = gridDefault;
+    let gridCount = parseInt(localStorage.getItem('logit_grid_count')) || gridDefault;
 
     const gridSlider = $('gridSlider');
     const sidebarGridSlider = $('sidebarGridSlider');
@@ -176,6 +182,7 @@ Logit.LibraryPage = {
       if (gridValue) gridValue.textContent = gridCount;
       if (sidebarGridValue) sidebarGridValue.textContent = gridCount;
       document.documentElement.style.setProperty('--grid', gridCount);
+      localStorage.setItem('logit_grid_count', gridCount);
     }
 
     if (gridSlider) {
@@ -187,7 +194,7 @@ Logit.LibraryPage = {
     setGridValue(gridCount);
 
     // ========= DATE TOGGLE =========
-    let showDates = true;
+    let showDates = localStorage.getItem('logit_show_dates') !== 'false';
     const dateToggle = $('dateToggle');
     const sidebarDateToggle = $('sidebarDateToggle');
 
@@ -199,6 +206,7 @@ Logit.LibraryPage = {
 
     function toggleDates() {
       showDates = !showDates;
+      localStorage.setItem('logit_show_dates', showDates);
       updateDateBtn();
     }
 
