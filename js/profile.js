@@ -278,23 +278,10 @@ Logit.ProfilePage = {
       const reader = new FileReader();
       reader.onload = (ev) => {
         const dataUrl = ev.target.result;
-        localStorage.setItem('logit_avatar', dataUrl);
         const avatarEl = $('profileAvatar');
         if (avatarEl) avatarEl.innerHTML = '<img src="' + dataUrl + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">';
-        const removeBtn = $('removeAvatarBtn');
-        if (removeBtn) removeBtn.style.display = 'flex';
       };
       reader.readAsDataURL(file);
-    });
-
-    // Remove avatar
-    if ($('removeAvatarBtn')) $('removeAvatarBtn').addEventListener('click', () => {
-      localStorage.removeItem('logit_avatar');
-      const avatarEl = $('profileAvatar');
-      const nameEl = $('profileName');
-      if (avatarEl) avatarEl.textContent = (nameEl?.textContent || 'U')[0].toUpperCase();
-      const removeBtn = $('removeAvatarBtn');
-      if (removeBtn) removeBtn.style.display = 'none';
     });
 
     // Edit username
@@ -493,14 +480,10 @@ Logit.ProfilePage = {
     // Offline
     if ($('enableCloudBtn')) $('enableCloudBtn').addEventListener('click', () => window.location.href = 'welcome.html');
 
-    // Auto Sync toggle
+    // Auto Sync toggle (always enabled, no persistence)
     const autoSyncToggle = $('autoSyncToggle');
     if (autoSyncToggle) {
-      autoSyncToggle.classList.toggle('active', localStorage.getItem('logit_auto_sync') !== 'false');
-      autoSyncToggle.addEventListener('click', () => {
-        autoSyncToggle.classList.toggle('active');
-        localStorage.setItem('logit_auto_sync', autoSyncToggle.classList.contains('active') ? 'true' : 'false');
-      });
+      autoSyncToggle.classList.add('active');
     }
 
   },

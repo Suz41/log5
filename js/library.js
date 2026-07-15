@@ -156,8 +156,7 @@ Logit.LibraryPage = {
     const gridMin = isPC ? 10 : 4;
     const gridMax = isPC ? 16 : 10;
     const gridDefault = isPC ? 10 : 4;
-    let gridCount = Number(localStorage.getItem('grid')) || gridDefault;
-    gridCount = Math.max(gridMin, Math.min(gridMax, gridCount));
+    let gridCount = gridDefault;
 
     const gridSlider = $('gridSlider');
     const sidebarGridSlider = $('sidebarGridSlider');
@@ -176,7 +175,6 @@ Logit.LibraryPage = {
       if (sidebarGridSlider) sidebarGridSlider.value = gridCount;
       if (gridValue) gridValue.textContent = gridCount;
       if (sidebarGridValue) sidebarGridValue.textContent = gridCount;
-      localStorage.setItem('grid', gridCount);
       document.documentElement.style.setProperty('--grid', gridCount);
     }
 
@@ -189,7 +187,7 @@ Logit.LibraryPage = {
     setGridValue(gridCount);
 
     // ========= DATE TOGGLE =========
-    let showDates = localStorage.getItem('dates') !== '0';
+    let showDates = true;
     const dateToggle = $('dateToggle');
     const sidebarDateToggle = $('sidebarDateToggle');
 
@@ -201,7 +199,6 @@ Logit.LibraryPage = {
 
     function toggleDates() {
       showDates = !showDates;
-      localStorage.setItem('dates', showDates ? '1' : '0');
       updateDateBtn();
     }
 
@@ -485,13 +482,8 @@ Logit.LibraryPage = {
     // Sidebar collapses
     const sidebarToggle = $('sidebarToggle');
     if (sidebarToggle) {
-      let isCollapsed = localStorage.getItem('sidebarCollapsed') === '1';
-      if (isCollapsed) {
-        document.body.classList.add('collapsed');
-      }
       sidebarToggle.onclick = function() {
-        const collapsed = document.body.classList.toggle('collapsed');
-        localStorage.setItem('sidebarCollapsed', collapsed ? '1' : '0');
+        document.body.classList.toggle('collapsed');
       };
     }
   }

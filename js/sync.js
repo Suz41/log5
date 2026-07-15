@@ -30,16 +30,13 @@ Logit.Sync = {
    * Setup automatic sync
    */
   setupAutoSync() {
-    const autoSyncEnabled = localStorage.getItem('logit_auto_sync') !== 'false';
     const syncInterval = 5 * 60 * 1000; // 5 minutes
 
-    if (autoSyncEnabled) {
-      this._autoSyncInterval = setInterval(() => {
-        if (!this._syncInProgress) {
-          this.sync();
-        }
-      }, syncInterval);
-    }
+    this._autoSyncInterval = setInterval(() => {
+      if (!this._syncInProgress) {
+        this.sync();
+      }
+    }, syncInterval);
   },
 
   /**
