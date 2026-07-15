@@ -172,8 +172,8 @@ Logit.ProfilePage = {
       const ratingEl = document.getElementById('statRating');
       if (ratingEl) ratingEl.textContent = avgRating;
 
-      // Rewatches (movies watched more than once)
-      const rewatchCount = Object.values(stats.rewatchMap).filter(r => r.count > 1).length;
+      // Rewatches (total times rewatched = count - 1 for each movie)
+      const rewatchCount = Object.values(stats.rewatchMap).reduce((sum, r) => sum + Math.max(0, r.count - 1), 0);
       const rewatchEl = document.getElementById('statRewatch');
       if (rewatchEl) rewatchEl.textContent = rewatchCount;
 
