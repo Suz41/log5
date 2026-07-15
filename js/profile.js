@@ -318,6 +318,89 @@ Logit.ProfilePage = {
     if (modal) modal.classList.remove('active');
   },
 
+  openDirectorModal() {
+    const modal = document.getElementById('directorModal');
+    if (modal) {
+      modal.classList.add('active');
+      const input = document.getElementById('directorSearchInput');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+      const results = document.getElementById('directorResults');
+      if (results) results.innerHTML = '';
+    }
+  },
+
+  closeDirectorModal() {
+    const modal = document.getElementById('directorModal');
+    if (modal) modal.classList.remove('active');
+  },
+
+  async searchDirectors(query) {
+    const API = Logit.Config.getApiKey();
+    const results = document.getElementById('directorResults');
+    if (!results || !API || !query || query.length < 2) {
+      if (results) results.innerHTML = '';
+      return;
+    }
+
+    try {
+      const data = await Logit.Search.tmdb('https://api.themoviedb.org/3/search/person?api_key=' + API + '&query=' + encodeURIComponent(query));
+      if (!data || !data.results) return;
+
+      // Filter to directors only
+      const directors = data.results.filter(p => p.known_for_department === 'Directing' && p.profile_path);
+      results.innerHTML = directors.slice(0, 8).map(p => {
+        const imgUrl = 'https://image.tmdb.org/t/p/w185' + p.profile_path;
+        return '<div class="directorItem" data-img="' + imgUrl + '" data-name="' + Logit.Utils.esc(p.name) + '">'
+          + '<img src="' + imgUrl + '" alt="' + Logit.Utils.esc(p.name) + '">'
+          + '<div class="directorItemInfo">'
+          + '<div class="directorItemName">' + Logit.Utils.esc(p.name) + '</div>'
+          + '<div class="directorItemKnown">Director</div>'
+          + '</div>'
+          + '</div>';
+      }).join('');
+
+      if (directors.length === 0) {
+        results.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);">No directors found</div>';
+      }
+
+      results.querySelectorAll('.directorItem').forEach(item => {
+        item.addEventListener('click', () => {
+          const imgUrl = item.dataset.img;
+          this.setDirectorAvatar(imgUrl);
+        });
+      });
+    } catch (e) {
+      console.error('Director search failed:', e);
+    }
+  },
+
+  setDirectorAvatar(imgUrl) {
+    // Fetch image and compress it
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const size = 200;
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      const scale = Math.max(size / img.width, size / img.height);
+      const x = (size - img.width * scale) / 2;
+      const y = (size - img.height * scale) / 2;
+      ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+      const compressed = canvas.toDataURL('image/jpeg', 0.8);
+      localStorage.setItem('logit_avatar', compressed);
+      const avatarEl = document.getElementById('profileAvatar');
+      if (avatarEl) avatarEl.innerHTML = '<img src="' + compressed + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">';
+      this.syncAvatarToCloud(compressed);
+      this.closeDirectorModal();
+    };
+    img.src = imgUrl;
+  },
+
   async searchFavMovies(query) {
     console.log('Searching:', query);
     const API = Logit.Config.getApiKey();
@@ -488,8 +571,8 @@ Logit.ProfilePage = {
     // Back
     if ($('backBtn')) $('backBtn').addEventListener('click', () => window.history.back());
 
-    // Edit avatar
-    if ($('editAvatarBtn')) $('editAvatarBtn').addEventListener('click', () => $('avatarInput')?.click());
+    // Edit avatar - open director search
+    if ($('editAvatarBtn')) $('editAvatarBtn').addEventListener('click', () => this.openDirectorModal());
     // Clear avatar
     if ($('clearAvatarBtn')) $('clearAvatarBtn').addEventListener('click', () => {
       if (!confirm('Remove avatar?')) return;
@@ -746,6 +829,13 @@ Logit.ProfilePage = {
       if (selected) selected.style.display = 'none';
       const confirmBtn = $('favConfirmBtn');
       if (confirmBtn) confirmBtn.disabled = true;
+    });
+
+    // Director avatar
+    if ($('directorModalClose')) $('directorModalClose').addEventListener('click', () => this.closeDirectorModal());
+    if ($('directorSearchInput')) $('directorSearchInput').addEventListener('input', (e) => {
+      clearTimeout(this._directorSearchTimeout);
+      this._directorSearchTimeout = setTimeout(() => this.searchDirectors(e.target.value), 300);
     });
 
   },

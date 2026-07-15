@@ -550,6 +550,96 @@
   opacity: 0.9;
 }
 
+/* ========= DIRECTOR AVATAR MODAL ========= */
+.directorModal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.7);
+  backdrop-filter: blur(10px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+
+.directorModal.active {
+  display: flex;
+}
+
+.directorSheet {
+  width: 90%;
+  max-width: 400px;
+  max-height: 80vh;
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.directorSearchInput {
+  width: 100%;
+  padding: 12px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 0.5px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.directorSearchInput::placeholder {
+  color: var(--muted);
+}
+
+.directorResults {
+  flex: 1;
+  overflow-y: auto;
+  max-height: 300px;
+}
+
+.directorItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.directorItem:hover {
+  background: rgba(255,255,255,0.05);
+}
+
+.directorItem img {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--surface2);
+}
+
+.directorItemInfo {
+  flex: 1;
+}
+
+.directorItemName {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.directorItemKnown {
+  font-size: 12px;
+  color: var(--muted);
+}
+
 /* ========= BIO ========= */
 .bioText {
   font-size: 14px;
