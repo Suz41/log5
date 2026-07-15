@@ -14,6 +14,7 @@ Logit.ProfilePage = {
       this.setupTabs();
       this.loadProfile();
       this.loadStats();
+      await this.loadFavoritesFromCloud();
       this.loadFavorites();
       this.updateSyncStatus();
       this.updateStorageInfo();
@@ -363,6 +364,7 @@ Logit.ProfilePage = {
     }
 
     localStorage.setItem('logit_favorites', JSON.stringify(favs));
+    this.syncFavoritesToCloud(favs);
     this._editingFavIndex = null;
     this.closeFavModal();
     this.loadFavorites();
@@ -372,6 +374,7 @@ Logit.ProfilePage = {
     const favs = JSON.parse(localStorage.getItem('logit_favorites') || '[]');
     favs.splice(index, 1);
     localStorage.setItem('logit_favorites', JSON.stringify(favs));
+    this.syncFavoritesToCloud(favs);
     this.loadFavorites();
   },
 
@@ -386,9 +389,39 @@ Logit.ProfilePage = {
       if (favs[index]) {
         favs[index].poster = 'https://image.tmdb.org/t/p/w342' + newPoster;
         localStorage.setItem('logit_favorites', JSON.stringify(favs));
+        this.syncFavoritesToCloud(favs);
         this.loadFavorites();
       }
     });
+  },
+
+  async syncFavoritesToCloud(favorites) {
+    const client = Logit.Supabase.getClient();
+    const userId = localStorage.getItem('logit_user_id');
+    if (!client || !userId) return;
+    try {
+      await client.from('settings').upsert({
+        user_id: userId,
+        favorites: favorites,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
+    } catch (e) {
+      console.error('Failed to sync favorites:', e);
+    }
+  },
+
+  async loadFavoritesFromCloud() {
+    const client = Logit.Supabase.getClient();
+    const userId = localStorage.getItem('logit_user_id');
+    if (!client || !userId) return;
+    try {
+      const { data } = await client.from('settings').select('favorites').eq('user_id', userId).single();
+      if (data && data.favorites) {
+        localStorage.setItem('logit_favorites', JSON.stringify(data.favorites));
+      }
+    } catch (e) {
+      console.error('Failed to load favorites from cloud:', e);
+    }
   },
 
   setupListeners() {
