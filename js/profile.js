@@ -221,15 +221,12 @@ Logit.ProfilePage = {
     try {
       const favs = JSON.parse(localStorage.getItem('logit_favorites') || '[]');
       const grid = document.getElementById('favFilmsGrid');
-      if (!grid) {
-        console.log('Fav grid not found');
-        return;
-      }
+      if (!grid) return;
 
       let html = '';
       for (let i = 0; i < 4; i++) {
         if (favs[i]) {
-          html += `<div class="favPoster" title="${favs[i].t}">
+          html += `<div class="favPoster" data-index="${i}" title="${favs[i].t} - Click to change">
             <img src="${favs[i].poster}" alt="${favs[i].t}">
             <button class="favRemove" data-index="${i}">&times;</button>
           </div>`;
@@ -241,7 +238,16 @@ Logit.ProfilePage = {
         }
       }
       grid.innerHTML = html;
-      console.log('Fav grid loaded:', html.length > 0);
+
+      // Click on poster to change
+      grid.querySelectorAll('.favPoster').forEach(poster => {
+        poster.addEventListener('click', (e) => {
+          if (e.target.classList.contains('favRemove')) return;
+          const idx = parseInt(poster.dataset.index);
+          this._editingFavIndex = idx;
+          this.openFavModal();
+        });
+      });
 
       // Click handlers for remove
       grid.querySelectorAll('.favRemove').forEach(btn => {
@@ -255,6 +261,7 @@ Logit.ProfilePage = {
       // Click handlers for empty slots
       grid.querySelectorAll('.favPosterPlaceholder').forEach(slot => {
         slot.addEventListener('click', () => {
+          this._editingFavIndex = null;
           this.openFavModal();
         });
       });
@@ -264,7 +271,6 @@ Logit.ProfilePage = {
   },
 
   openFavModal() {
-    console.log('Opening fav modal');
     const modal = document.getElementById('favModal');
     if (modal) {
       modal.classList.add('active');
@@ -279,9 +285,10 @@ Logit.ProfilePage = {
       const results = document.getElementById('favSearchResults');
       if (results) results.innerHTML = '';
       const confirmBtn = document.getElementById('favConfirmBtn');
-      if (confirmBtn) confirmBtn.disabled = true;
-    } else {
-      console.log('Fav modal not found');
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = this._editingFavIndex !== null ? 'Change Poster' : 'Add to Favorites';
+      }
     }
   },
 
@@ -339,9 +346,18 @@ Logit.ProfilePage = {
   addFavorite() {
     if (!this._selectedFav) return;
     const favs = JSON.parse(localStorage.getItem('logit_favorites') || '[]');
-    if (favs.length >= 4) return;
-    favs.push(this._selectedFav);
+
+    if (this._editingFavIndex !== null && this._editingFavIndex < favs.length) {
+      // Edit existing
+      favs[this._editingFavIndex] = this._selectedFav;
+    } else {
+      // Add new
+      if (favs.length >= 4) return;
+      favs.push(this._selectedFav);
+    }
+
     localStorage.setItem('logit_favorites', JSON.stringify(favs));
+    this._editingFavIndex = null;
     this.closeFavModal();
     this.loadFavorites();
   },
