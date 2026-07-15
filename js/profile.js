@@ -11,6 +11,9 @@ Logit.ProfilePage = {
       this.updateSyncStatus();
       this.updateStorageInfo();
       this.updateSyncCounts();
+      this.loadStats();
+      this.loadRecentFilms();
+      this.loadTopGenres();
     } catch (e) { console.error('Profile init error:', e); }
   },
 
@@ -124,7 +127,7 @@ Logit.ProfilePage = {
       const lastSync = Logit.Sync.getLastSyncTime();
       const badge = document.getElementById('syncStatusBadge');
       const statusText = document.getElementById('syncStatusText');
-      if (badge) badge.className = 'syncStatus ' + status;
+      if (badge) badge.className = 'syncBadge ' + status;
       if (statusText) {
         if (status === 'offline') statusText.textContent = 'Offline';
         else if (status === 'syncing') statusText.textContent = 'Syncing...';
@@ -132,6 +135,84 @@ Logit.ProfilePage = {
       }
       const lastSyncEl = document.getElementById('lastSyncedTime');
       if (lastSyncEl) lastSyncEl.textContent = lastSync ? this.formatTime(lastSync) : 'Never';
+    } catch (e) {}
+  },
+
+  loadStats() {
+    try {
+      const movies = Logit.Storage.loadMovies();
+      const stats = Logit.StatUtils.aggregate(movies);
+
+      // Films count
+      const filmsEl = document.getElementById('statFilms');
+      if (filmsEl) filmsEl.textContent = movies.length;
+
+      // Average rating
+      const avgRating = movies.length > 0
+        ? (movies.reduce((a, b) => a + (Number(b.r) || 0), 0) / movies.length).toFixed(1)
+        : '0.0';
+      const ratingEl = document.getElementById('statRating');
+      if (ratingEl) ratingEl.textContent = avgRating;
+
+      // Rewatches
+      const rewatchCount = Object.values(stats.rewatchMap).filter(r => r.count > 1).length;
+      const rewatchEl = document.getElementById('statRewatch');
+      if (rewatchEl) rewatchEl.textContent = rewatchCount;
+
+      // Hours
+      const totalMins = movies.reduce((a, b) => a + (Number(b.rt) || 0), 0);
+      const hours = Math.round(totalMins / 60);
+      const hoursEl = document.getElementById('statHours');
+      if (hoursEl) hoursEl.textContent = hours;
+    } catch (e) {}
+  },
+
+  loadRecentFilms() {
+    try {
+      const movies = Logit.Storage.loadMovies();
+      const grid = document.getElementById('recentFilmsGrid');
+      if (!grid) return;
+
+      // Sort by date, most recent first
+      const sorted = [...movies]
+        .filter(m => m.d)
+        .sort((a, b) => new Date(b.d) - new Date(a.d))
+        .slice(0, 10);
+
+      if (sorted.length === 0) {
+        grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--muted);font-size:13px;">No films logged yet</div>';
+        return;
+      }
+
+      grid.innerHTML = sorted.map(m => {
+        const poster = m.sp
+          ? `<img src="https://image.tmdb.org/t/p/w342${m.sp}" alt="${m.t}" loading="lazy">`
+          : `<div class="filmPosterPlaceholder">${m.t ? m.t.substring(0, 20) : '?'}</div>`;
+        const rating = m.r ? `<div class="filmRating">${m.r}★</div>` : '';
+        return `<div class="filmPoster" title="${m.t}">${poster}${rating}</div>`;
+      }).join('');
+    } catch (e) {}
+  },
+
+  loadTopGenres() {
+    try {
+      const movies = Logit.Storage.loadMovies();
+      const stats = Logit.StatUtils.aggregate(movies);
+      const list = document.getElementById('genreList');
+      if (!list) return;
+
+      const genres = Object.entries(stats.genreCount)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 8);
+
+      if (genres.length === 0) {
+        list.innerHTML = '<div style="color:var(--muted);font-size:13px;">No genre data yet</div>';
+        return;
+      }
+
+      list.innerHTML = genres.map(([genre, count]) => {
+        return `<div class="genreTag">${genre} <span class="genreCount">${count}</span></div>`;
+      }).join('');
     } catch (e) {}
   },
 

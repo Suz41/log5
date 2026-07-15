@@ -302,6 +302,9 @@ Logit.StatsPage = {
         let imported = 0;
         let failed = 0;
         const total = lines.length;
+        const existingIds = new Set(movies.map(function(m) { return m.id; }));
+        const existingTmdbIds = new Set(movies.map(function(m) { return m.tmdb_id || ''; }));
+        const existingImdbIds = new Set(movies.map(function(m) { return m.imdb_id || ''; }));
 
         for (let i = 0; i < lines.length; i++) {
           const entry = Logit.Import.parseLine(lines[i]);
@@ -313,8 +316,10 @@ Logit.StatsPage = {
             let detail = null;
 
             if (entry.tmdbId) {
+              if (existingTmdbIds.has(entry.tmdbId)) { continue; }
               detail = await Logit.Search.tmdb('https://api.themoviedb.org/3/movie/' + entry.tmdbId + '?api_key=' + API + '&append_to_response=credits,images');
             } else if (entry.imdbId) {
+              if (existingImdbIds.has(entry.imdbId)) { continue; }
               const findData = await Logit.Search.tmdb('https://api.themoviedb.org/3/find/' + entry.imdbId + '?api_key=' + API + '&external_source=imdb_id');
               if (findData && findData.movie_results && findData.movie_results.length > 0) {
                 const foundId = findData.movie_results[0].id;
@@ -345,9 +350,17 @@ Logit.StatsPage = {
             }
             if (!detail) { failed++; continue; }
 
+            const newTmdbId = String(detail.id || '');
+            const newImdbId = detail.imdb_id || '';
+            if (existingTmdbIds.has(newTmdbId) || (newImdbId && existingImdbIds.has(newImdbId))) { continue; }
+
             const watch = entry.rewatch ? 'Rewatch' : Logit.Movies.watchType(movies, detail.title || '');
 
-            movies.unshift(Logit.MovieFactory.fromTMDB(detail, entry.rating || 3, watch, Logit.Import.normalizeDate(entry.date)));
+            const newMovie = Logit.MovieFactory.fromTMDB(detail, entry.rating || 3, watch, Logit.Import.normalizeDate(entry.date));
+            movies.unshift(newMovie);
+            existingIds.add(newMovie.id);
+            existingTmdbIds.add(newTmdbId);
+            if (newImdbId) existingImdbIds.add(newImdbId);
 
             imported++;
           } catch (e) { failed++; }
