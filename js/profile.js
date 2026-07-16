@@ -12,9 +12,10 @@ Logit.ProfilePage = {
     try {
       this.setupListeners();
       this.setupTabs();
-      // Load avatar from cloud first
+      // Load avatar and banner from cloud first
       if (!Logit.Auth.isOfflineMode()) {
         try { await this.loadAvatarFromCloud(); } catch (e) {}
+        try { await this.loadBannerFromCloud(); } catch (e) {}
       }
       this.loadProfile();
       // Pull movies from cloud first for accurate stats
@@ -51,6 +52,7 @@ Logit.ProfilePage = {
     const nameEl = document.getElementById('profileName');
     const emailEl = document.getElementById('profileEmail');
     const avatarEl = document.getElementById('profileAvatar');
+    const banner = document.getElementById('profileBanner');
 
     if (user) {
       const username = user.user_metadata?.username || user.email?.split('@')[0] || 'User';
@@ -62,6 +64,17 @@ Logit.ProfilePage = {
         avatarEl.innerHTML = '<img src="' + savedAvatar + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">';
       } else if (avatarEl) {
         avatarEl.textContent = username[0].toUpperCase();
+      }
+      // Load saved banner
+      const savedBanner = localStorage.getItem('logit_banner');
+      if (savedBanner && banner) {
+        banner.style.background = 'none';
+        let bannerImg = banner.querySelector('img');
+        if (!bannerImg) {
+          bannerImg = document.createElement('img');
+          banner.appendChild(bannerImg);
+        }
+        bannerImg.src = savedBanner;
       }
     } else {
       if (nameEl) nameEl.textContent = 'Offline Mode';
@@ -531,6 +544,50 @@ Logit.ProfilePage = {
     }
   },
 
+  async syncBannerToCloud(bannerData) {
+    const client = Logit.Supabase.getClient();
+    const userId = localStorage.getItem('logit_user_id');
+    if (!client || !userId) return;
+    try {
+      await client.from('settings').upsert({
+        user_id: userId,
+        banner: bannerData,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
+    } catch (e) {
+      console.error('Failed to sync banner:', e);
+    }
+  },
+
+  async clearBannerFromCloud() {
+    const client = Logit.Supabase.getClient();
+    const userId = localStorage.getItem('logit_user_id');
+    if (!client || !userId) return;
+    try {
+      await client.from('settings').upsert({
+        user_id: userId,
+        banner: null,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
+    } catch (e) {
+      console.error('Failed to clear banner:', e);
+    }
+  },
+
+  async loadBannerFromCloud() {
+    const client = Logit.Supabase.getClient();
+    const userId = localStorage.getItem('logit_user_id');
+    if (!client || !userId) return;
+    try {
+      const { data } = await client.from('settings').select('banner').eq('user_id', userId).single();
+      if (data && data.banner) {
+        localStorage.setItem('logit_banner', data.banner);
+      }
+    } catch (e) {
+      console.error('Failed to load banner from cloud:', e);
+    }
+  },
+
   async loadAvatarFromCloud() {
     const client = Logit.Supabase.getClient();
     const userId = localStorage.getItem('logit_user_id');
@@ -587,6 +644,56 @@ Logit.ProfilePage = {
           if (avatarEl) avatarEl.innerHTML = '<img src="' + compressed + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">';
           // Sync to cloud
           this.syncAvatarToCloud(compressed);
+        };
+        img.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // Edit banner
+    if ($('editBannerBtn')) $('editBannerBtn').addEventListener('click', () => $('bannerInput')?.click());
+    if ($('clearBannerBtn')) $('clearBannerBtn').addEventListener('click', () => {
+      if (!confirm('Remove cover image?')) return;
+      localStorage.removeItem('logit_banner');
+      this.clearBannerFromCloud();
+      const banner = $('profileBanner');
+      if (banner) {
+        banner.style.background = '';
+        const img = banner.querySelector('img');
+        if (img) img.remove();
+      }
+    });
+    if ($('bannerInput')) $('bannerInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const maxW = 1200;
+          const maxH = 400;
+          let w = img.width;
+          let h = img.height;
+          if (w > maxW) { h = h * maxW / w; w = maxW; }
+          if (h > maxH) { w = w * maxH / h; h = maxH; }
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const compressed = canvas.toDataURL('image/jpeg', 0.7);
+          localStorage.setItem('logit_banner', compressed);
+          this.syncBannerToCloud(compressed);
+          const banner = $('profileBanner');
+          if (banner) {
+            banner.style.background = 'none';
+            let bannerImg = banner.querySelector('img');
+            if (!bannerImg) {
+              bannerImg = document.createElement('img');
+              banner.appendChild(bannerImg);
+            }
+            bannerImg.src = compressed;
+          }
         };
         img.src = ev.target.result;
       };
