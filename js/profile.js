@@ -373,35 +373,12 @@ Logit.ProfilePage = {
   },
 
   setDirectorAvatar(imgUrl) {
-    // Fetch image via proxy to avoid CORS issues
-    const proxyUrl = 'https://image.tmdb.org/t/p/w185' + imgUrl.replace('https://image.tmdb.org/t/p/w185', '');
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement('canvas');
-      const size = 200;
-      canvas.width = size;
-      canvas.height = size;
-      const ctx = canvas.getContext('2d');
-      const scale = Math.max(size / img.width, size / img.height);
-      const x = (size - img.width * scale) / 2;
-      const y = (size - img.height * scale) / 2;
-      ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
-      const compressed = canvas.toDataURL('image/jpeg', 0.8);
-      localStorage.setItem('logit_avatar', compressed);
-      const avatarEl = document.getElementById('profileAvatar');
-      if (avatarEl) avatarEl.innerHTML = '<img src="' + compressed + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">';
-      this.syncAvatarToCloud(compressed);
-      this.closeDirectorModal();
-    };
-    img.onerror = () => {
-      // Fallback: just use the URL directly
-      localStorage.setItem('logit_avatar', imgUrl);
-      const avatarEl = document.getElementById('profileAvatar');
-      if (avatarEl) avatarEl.innerHTML = '<img src="' + imgUrl + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">';
-      this.syncAvatarToCloud(imgUrl);
-      this.closeDirectorModal();
-    };
-    img.src = imgUrl;
+    // Use the image URL directly (TMDB images don't support CORS for canvas)
+    localStorage.setItem('logit_avatar', imgUrl);
+    const avatarEl = document.getElementById('profileAvatar');
+    if (avatarEl) avatarEl.innerHTML = '<img src="' + imgUrl + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">';
+    this.syncAvatarToCloud(imgUrl);
+    this.closeDirectorModal();
   },
 
   async searchFavMovies(query) {
@@ -844,12 +821,9 @@ Logit.ProfilePage = {
     const directorResults = $('directorResults');
     if (directorResults) {
       directorResults.addEventListener('click', (e) => {
-        console.log('Director click:', e.target);
         const item = e.target.closest('.directorItem');
-        console.log('Found item:', item);
         if (item) {
           const url = item.getAttribute('data-url');
-          console.log('Director URL:', url);
           if (url) this.setDirectorAvatar(url);
         }
       });
