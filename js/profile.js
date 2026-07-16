@@ -570,17 +570,26 @@ Logit.ProfilePage = {
     try {
       const data = await Logit.Search.tmdb('https://api.themoviedb.org/3/search/movie?api_key=' + API + '&query=' + encodeURIComponent(query));
       if (!data || !data.results) return;
-      const movies = data.results.filter(m => m.backdrop_path);
-      results.innerHTML = movies.slice(0, 6).map(m => {
-        const imgUrl = 'https://image.tmdb.org/t/p/w780' + m.backdrop_path;
-        return '<div class="bannerSearchItem" data-img="' + imgUrl + '">'
-          + '<img src="https://image.tmdb.org/t/p/w185' + m.backdrop_path + '" alt="' + Logit.Utils.esc(m.title) + '">'
-          + '<span class="bannerSearchItemTitle">' + Logit.Utils.esc(m.title) + ' (' + (m.release_date || '').slice(0, 4) + ')</span>'
-          + '</div>';
-      }).join('');
-      if (movies.length === 0) {
-        results.innerHTML = '<div style="text-align:center;padding:20px;color:var(--muted);">No backdrops found</div>';
+      const movies = data.results.filter(m => m.backdrop_path).slice(0, 4);
+      let html = '';
+      for (const m of movies) {
+        // Fetch backdrops for each movie
+        const images = await Logit.Search.tmdb('https://api.themoviedb.org/3/movie/' + m.id + '/images?api_key=' + API);
+        if (images && images.backdrops) {
+          const backdrops = images.backdrops.slice(0, 3);
+          html += '<div style="margin-bottom:12px;">';
+          html += '<div style="font-size:12px;color:var(--muted);margin-bottom:6px;padding-left:4px;">' + Logit.Utils.esc(m.title) + ' (' + (m.release_date || '').slice(0, 4) + ')</div>';
+          html += '<div style="display:flex;gap:8px;overflow-x:auto;">';
+          for (const b of backdrops) {
+            const imgUrl = 'https://image.tmdb.org/t/p/w780' + b.file_path;
+            html += '<div class="bannerSearchItem" data-img="' + imgUrl + '" style="flex-shrink:0;">';
+            html += '<img src="https://image.tmdb.org/t/p/w300' + b.file_path + '" style="width:160px;height:90px;border-radius:6px;object-fit:cover;">';
+            html += '</div>';
+          }
+          html += '</div></div>';
+        }
       }
+      results.innerHTML = html || '<div style="text-align:center;padding:20px;color:var(--muted);">No backdrops found</div>';
       const self = this;
       results.querySelectorAll('.bannerSearchItem').forEach(item => {
         item.addEventListener('click', () => {
@@ -594,8 +603,10 @@ Logit.ProfilePage = {
   },
 
   setBannerImage(imgUrl) {
-    localStorage.setItem('logit_banner', imgUrl);
-    this.syncBannerToCloud(imgUrl);
+    // Use higher quality image
+    const hqUrl = imgUrl.replace('/w780/', '/w1280/');
+    localStorage.setItem('logit_banner', hqUrl);
+    this.syncBannerToCloud(hqUrl);
     const banner = document.getElementById('profileBanner');
     if (banner) {
       banner.style.background = 'none';
@@ -604,7 +615,7 @@ Logit.ProfilePage = {
         bannerImg = document.createElement('img');
         banner.appendChild(bannerImg);
       }
-      bannerImg.src = imgUrl;
+      bannerImg.src = hqUrl;
     }
     this.closeBannerModal();
   },
