@@ -26,7 +26,7 @@ Logit.LibraryPage = {
     const state = {
       movies: [],
       current: null,
-      openMonths: new Set(JSON.parse(localStorage.getItem('logit_open_months') || '[]'))
+      openMonths: new Set()
     };
 
     const library = $('library');
@@ -115,13 +115,7 @@ Logit.LibraryPage = {
 
         section.querySelector('.monthHead').onclick = function(e) {
           if (e.target.closest('.movie')) return;
-          const isActive = section.classList.toggle('active');
-          if (isActive) {
-            state.openMonths.add(key);
-          } else {
-            state.openMonths.delete(key);
-          }
-          localStorage.setItem('logit_open_months', JSON.stringify([...state.openMonths]));
+          section.classList.toggle('active');
         };
 
         fragment.append(section);
