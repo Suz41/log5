@@ -10,7 +10,7 @@
 /* ========= PROFILE HEADER ========= */
 .profileHeader {
   position: relative;
-  padding: 0 40px;
+  padding: 20px 40px 0;
   z-index: 10;
 }
 
@@ -163,7 +163,7 @@
   display: flex;
   gap: 0;
   padding: 0 32px;
-  margin-top: 20px;
+  margin-top: 24px;
   border-bottom: 1px solid var(--border);
   overflow-x: auto;
 }
@@ -1004,7 +1004,7 @@
 /* ========= RESPONSIVE ========= */
 @media (max-width: 768px) {
   .profileHeader {
-    padding: 0 16px;
+    padding: 16px 16px 0;
   }
 
   .profileHeaderInner {
