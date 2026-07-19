@@ -48,7 +48,7 @@ A clean, offline-first movie logger with cloud sync. Built with vanilla HTML, CS
 
 ## Important
 
-> **Indian Users:** TMDB API is blocked in India. Use a VPN to search and add movies. Once added, movies work offline without VPN.
+> **Indian Users:** TMDB API is blocked in India. You need a VPN to search and add movies — even in offline mode. Once added, movies work without VPN.
 
 ## Documentation
 

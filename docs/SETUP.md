@@ -20,11 +20,11 @@ No build tools, no installation required.
 
 ## Note for Indian Users
 
-TMDB API is blocked in India. Use a VPN to:
+TMDB API is blocked in India. You need a VPN to:
 - Search and add movies
 - Change movie posters
 
-Once added, movies work offline without VPN.
+This applies even in offline mode. Once added, movies work without VPN.
 
 ---
 

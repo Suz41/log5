@@ -33,7 +33,7 @@ A free key from <a href="https://www.themoviedb.org/settings/api">The Movie Data
 
 <details>
 <summary><strong>Do I need a VPN?</strong></summary>
-If you're in India, yes. TMDB API is blocked in India. Use a VPN to search and add movies. Once added, movies work offline without VPN.
+If you're in India, yes. TMDB API is blocked in India. You need a VPN to search and add movies — even in offline mode. Once a movie is added, it works without VPN.
 </details>
 
 ---
