@@ -3,19 +3,18 @@
 ## Prerequisites
 
 - A modern web browser (Chrome, Firefox, Safari, Edge)
-- A text editor (VS Code recommended)
-- Git (optional, for cloning)
 
 ## Quick Start
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/Suz41/logit.git
-   ```
+1. Go to [suz41.github.io/logit](https://suz41.github.io/logit)
+2. Start logging movies
 
-2. Open `index.html` in your browser
+**Or use locally:**
+1. Download the ZIP from GitHub
+2. Extract it
+3. Open `index.html` in your browser
 
-That's it — the app works offline with no build step.
+No build tools, no installation required.
 
 ---
 
