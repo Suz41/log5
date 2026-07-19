@@ -65,9 +65,7 @@
 ┌─────────────────────────────────────────┐
 │              localStorage               │
 ├─────────────────────────────────────────┤
-│  movies      - Movie data array        │
-│  logit_avatar - User avatar (base64)   │
-│  logit_favorites - Favorite films      │
+│  movies        - Movie data array      │
 │  logit_user_id - Auth user ID          │
 │  logit_api_key - TMDB API key          │
 └─────────────────────────────────────────┘

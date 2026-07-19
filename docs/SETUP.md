@@ -115,5 +115,4 @@ No build tools required. Edit files directly and refresh the browser.
 
 **localStorage full:**
 - Max size is ~5MB
-- Compress avatar images before saving
 - Export and clear old data periodically
