@@ -1,33 +1,24 @@
-# Project Rules
+# Rules
 
-Hard constraints that must be followed when working on this project.
+## Do
 
-## Data Storage
+- Keep it simple — no frameworks, no build tools
+- Test on both mobile and desktop before pushing
+- Use null checks on all `getElementById` calls
+- Wrap async operations in try/catch
+- Save movies to localStorage, everything else to Supabase
+- Use text-based logo only
+- Push code when asked without confirmation
+- Follow existing code style
 
-- **localStorage is movies-only** — Only the `movies` key exists in localStorage. No avatar, no settings, no UI state.
-- Auth keys (`logit_user_id`, `logit_offline_mode`) and API keys are functional necessities only.
+## Don't
 
-## Design
-
-- **No SVG logos** — Keep text-based logo only. User rejected film reel + text SVG.
-- **No email in profile page** — User does not want email displayed.
-- **No "+" button on favorites section** — User does not want add-to-favorites button visible.
-- **Improve, don't redesign** — Polish and clean up, don't change the overall design.
-
-## Performance
-
-- **Profile page must never freeze** — All `getElementById` calls need null checks. All async operations need try/catch.
-
-## Git Workflow
-
-- **Push without asking** — When user says "push", commit and push immediately without confirmation prompts.
-
-## VPN Requirement
-
-- **Indian users need VPN** — TMDB API is blocked in India. VPN required for adding movies and changing posters. Once added, movies work offline.
-
-## Technical
-
-- **No frameworks** — Pure HTML, CSS, JavaScript only.
-- **No build tools** — Edit files directly, no compilation needed.
-- **Cloud sync is hardcoded** — Supabase credentials are pre-configured. No user setup needed.
+- Don't add frameworks (React, Vue, etc.)
+- Don't use npm, webpack, or any build tools
+- Don't store avatar, favorites, or settings in localStorage
+- Don't display email on profile page
+- Don't show "+" button on favorites section
+- Don't use SVG logos
+- Don't redesign — only improve and polish
+- Don't ask for confirmation when pushing
+- Don't use `background: var(--accent)` with `color: #fff`
