@@ -67,14 +67,16 @@
   color: var(--muted);
   margin-top: 4px;
   line-height: 1.3;
+  max-height: 0;
+  overflow: hidden;
   opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s;
+  transition: max-height 0.2s, opacity 0.2s, margin-top 0.2s;
 }
 
 #runtimeBox.expanded .timeSub {
+  max-height: 40px;
   opacity: 1;
-  pointer-events: auto;
+  margin-top: 4px;
 }
 
 /* ========= PEOPLE GRID (DIRECTORS & ACTORS) ========= */
