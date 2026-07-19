@@ -148,10 +148,9 @@ Logit.StatsPage = {
 
     // ========= LOCAL FUNCTIONS =========
     function toggleRuntime() {
-      const timeSub = document.querySelector('#timeCount .timeSub');
-      if (timeSub) {
-        const visible = timeSub.style.display === 'block';
-        timeSub.style.display = visible ? 'none' : 'block';
+      const box = $('runtimeBox');
+      if (box) {
+        box.classList.toggle('expanded');
       }
     }
 
