@@ -1,18 +1,36 @@
-# Log!t (Staging)
+# Log!t
 
-Staging and testing environment for **Log!t** `v2.0.0` (Offline-first movie logger with optional Supabase cloud sync).
+A clean, offline-first movie logger with optional cloud sync. Search via TMDB, rate films, track rewatches — all stored locally with optional Supabase backup.
 
-👉 **[suz41.github.io/log5](https://suz41.github.io/log5)**
+**Live:** [suz41.github.io/logit](https://suz41.github.io/logit)
 
 ---
 
 ## Features
-- **Offline-First** — Local storage fallback, automatic background synchronization
-- **Supabase Cloud Sync** — Email/password authentication (works out-of-the-box via pre-configured default staging database)
-- **Registration Validation** — Username uniqueness check and duplicate email alerts
-- **PC Layout** — Sticky header navigation, inline settings, responsive grid (4-10 columns)
 
-## Setup, Tutorial & Design Guides
-* Detailed Setup & Usage Tutorial: [TUTORIAL.md](TUTORIAL.md)
-* Cloud Schema Reference: [CLOUD_SETUP.md](CLOUD_SETUP.md)
-* Design System & tokens: [design.md](design.md)
+- **Offline-First** — Works without internet, data stored in localStorage
+- **Cloud Sync** — Optional Supabase integration for cross-device backup
+- **TMDB Search** — Find any movie with poster, rating, cast, and metadata
+- **Personal Stats** — Track films watched, average rating, runtime, top directors/actors
+- **Profile** — Avatar, favorite films, bio
+- **Dark Theme** — Clean, minimal UI
+- **Responsive** — Works on mobile and desktop
+
+## Tech Stack
+
+- HTML, CSS, JavaScript (no frameworks)
+- Supabase (optional cloud sync)
+- TMDB API (movie search)
+
+## Getting Started
+
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/Suz41/logit.git
+   ```
+2. Open `index.html` in your browser
+3. Set your TMDB API key in Settings to enable movie search
+
+## License
+
+MIT
