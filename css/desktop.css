@@ -23,12 +23,7 @@
   }
 
   .logo {
-    display: flex !important;
-    align-items: center;
-  }
-
-  .logo img {
-    height: 36px;
+    display: block !important;
   }
 
   .bottomNav {
