@@ -6,11 +6,11 @@
 <title>Profile - Log!t</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/main.css?v=11">
-<link rel="stylesheet" href="css/components.css?v=11">
-<link rel="stylesheet" href="css/profile.css?v=11">
-<link rel="stylesheet" href="css/modal.css?v=11">
-<link rel="stylesheet" href="css/desktop.css?v=11">
+<link rel="stylesheet" href="css/main.css?v=12">
+<link rel="stylesheet" href="css/components.css?v=12">
+<link rel="stylesheet" href="css/profile.css?v=12">
+<link rel="stylesheet" href="css/modal.css?v=12">
+<link rel="stylesheet" href="css/desktop.css?v=12">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body>
@@ -22,7 +22,7 @@
     </div>
     <div class="pcHeaderNav">
       <button class="pcNavBtn" onclick="location.href='index.html'">Library</button>
-      <button class="pcNavBtn active" onclick="location.href='PS.html'">Stats</button>
+      <button class="pcNavBtn" onclick="location.href='PS.html'">Stats</button>
     </div>
     <div style="display:flex;gap:6px;">
       <button class="settingsIcon" id="backBtn" title="Back">
@@ -36,20 +36,21 @@
 
   <!-- Profile Header -->
   <div class="profileHeader">
-    <div class="profileHeaderInner">
-      <div class="avatarSection">
-        <div class="avatarWrap" id="avatarWrap">
-          <div class="avatar" id="profileAvatar">S</div>
-          <button class="avatarEdit" id="editAvatarBtn" title="Change avatar">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-          </button>
-          <button class="avatarClear" id="clearAvatarBtn" title="Clear avatar">
-            <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          </button>
-          <input type="file" id="avatarInput" accept="image/*" style="display:none;">
-        </div>
+    <div class="profileTop">
+      <!-- Avatar -->
+      <div class="avatarWrap" id="avatarWrap">
+        <div class="avatar" id="profileAvatar">S</div>
+        <button class="avatarEdit" id="editAvatarBtn" title="Change avatar">
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        </button>
+        <button class="avatarClear" id="clearAvatarBtn" title="Clear avatar">
+          <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+        <input type="file" id="avatarInput" accept="image/*" style="display:none;">
       </div>
-      <div class="profileInfoSection">
+
+      <!-- Name & Email -->
+      <div class="profileIdentity">
         <div class="profileNameRow">
           <h1 class="profileName" id="profileName">Loading...</h1>
           <button class="editNameBtn" id="editUsernameBtn" title="Edit username">
@@ -59,22 +60,24 @@
         <p class="profileEmail" id="profileEmail"></p>
         <p class="profileBio" id="profileBioMobile">Movie enthusiast. Tracking every watch.</p>
       </div>
-      <div class="profileStatsRow">
-        <div class="headerStat">
-          <span class="headerStatNum" id="statFilms">0</span>
-          <span class="headerStatLabel">FILMS</span>
+
+      <!-- Stats -->
+      <div class="profileStats">
+        <div class="profileStat">
+          <span class="profileStatNum" id="statFilms">0</span>
+          <span class="profileStatLabel">FILMS</span>
         </div>
-        <div class="headerStat">
-          <span class="headerStatNum" id="statRating">0.0</span>
-          <span class="headerStatLabel">AVG</span>
+        <div class="profileStat">
+          <span class="profileStatNum" id="statRating">0.0</span>
+          <span class="profileStatLabel">AVG</span>
         </div>
-        <div class="headerStat">
-          <span class="headerStatNum" id="statRewatch">0</span>
-          <span class="headerStatLabel">REWATCH</span>
+        <div class="profileStat">
+          <span class="profileStatNum" id="statRewatch">0</span>
+          <span class="profileStatLabel">REWATCH</span>
         </div>
-        <div class="headerStat">
-          <span class="headerStatNum" id="statHours">0</span>
-          <span class="headerStatLabel">HOURS</span>
+        <div class="profileStat">
+          <span class="profileStatNum" id="statHours">0</span>
+          <span class="profileStatLabel">HOURS</span>
         </div>
       </div>
     </div>
@@ -127,9 +130,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Settings Tab -->
-    <div class="tabPanel" id="panel-settings">
 
     <!-- Settings Tab -->
     <div class="tabPanel" id="panel-settings">

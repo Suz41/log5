@@ -1,46 +1,42 @@
-/* ========= Log!t Profile - Letterboxd Style ========= */
+/* ========= Log!t Profile - Clean Centered Layout ========= */
 
-/* ========= PROFILE PAGE LAYOUT ========= */
+/* ========= PROFILE PAGE ========= */
 .profilePage {
-  padding: 60px 0 80px;
+  padding-bottom: 80px;
   max-width: 100%;
   margin: 0 auto;
 }
 
 /* ========= PROFILE HEADER ========= */
 .profileHeader {
-  position: relative;
-  padding: 0 40px;
-  z-index: 10;
+  padding: 32px 40px 0;
 }
 
-.profileHeaderInner {
+.profileTop {
   display: flex;
-  align-items: flex-end;
-  gap: 24px;
+  align-items: center;
+  gap: 32px;
 }
 
-.avatarSection {
+/* ========= AVATAR ========= */
+.avatarWrap {
+  position: relative;
   flex-shrink: 0;
 }
 
-.avatarWrap {
-  position: relative;
-}
-
 .avatar {
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--surface2) 0%, rgba(255,255,255,0.08) 100%);
-  border: 4px solid var(--bg);
+  border: 3px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 48px;
+  font-size: 40px;
   font-weight: 600;
   color: var(--text);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  overflow: hidden;
 }
 
 .avatar img {
@@ -52,8 +48,8 @@
 
 .avatarEdit {
   position: absolute;
-  bottom: 4px;
-  right: 4px;
+  bottom: 0;
+  right: 0;
   width: 28px;
   height: 28px;
   border-radius: 50%;
@@ -70,8 +66,8 @@
 
 .avatarClear {
   position: absolute;
-  bottom: 4px;
-  left: 4px;
+  bottom: 0;
+  left: 0;
   width: 22px;
   height: 22px;
   border-radius: 50%;
@@ -91,10 +87,10 @@
   opacity: 1;
 }
 
-.profileInfoSection {
+/* ========= IDENTITY ========= */
+.profileIdentity {
   flex: 1;
   min-width: 0;
-  padding-bottom: 8px;
 }
 
 .profileNameRow {
@@ -104,7 +100,7 @@
 }
 
 .profileName {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   color: var(--text);
   margin: 0;
@@ -131,27 +127,33 @@
   margin: 4px 0 0 0;
 }
 
-.profileStatsRow {
-  display: flex;
-  gap: 24px;
-  padding-bottom: 8px;
+.profileBio {
+  display: none;
 }
 
-.headerStat {
+/* ========= STATS ========= */
+.profileStats {
+  display: flex;
+  gap: 28px;
+  flex-shrink: 0;
+}
+
+.profileStat {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
 }
 
-.headerStatNum {
-  font-size: 20px;
+.profileStatNum {
+  font-size: 22px;
   font-weight: 700;
   color: var(--text);
   font-family: 'Poppins', sans-serif;
+  line-height: 1;
 }
 
-.headerStatLabel {
+.profileStatLabel {
   font-size: 10px;
   color: var(--muted);
   text-transform: uppercase;
@@ -162,7 +164,7 @@
 .profileTabs {
   display: flex;
   gap: 0;
-  padding: 0 32px;
+  padding: 0 40px;
   margin-top: 24px;
   border-bottom: 1px solid var(--border);
   overflow-x: auto;
@@ -192,7 +194,7 @@
 
 /* ========= TAB CONTENT ========= */
 .profileContent {
-  padding: 24px 32px;
+  padding: 24px 40px;
 }
 
 .tabPanel {
@@ -206,7 +208,7 @@
 /* ========= TWO COLUMN LAYOUT ========= */
 .twoColumn {
   display: grid;
-  grid-template-columns: 1fr 320px;
+  grid-template-columns: 1fr 300px;
   gap: 32px;
 }
 
@@ -220,7 +222,7 @@
 }
 
 .blockTitle {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: var(--muted);
   text-transform: uppercase;
@@ -230,64 +232,6 @@
   border-bottom: 1px solid var(--border);
 }
 
-/* ========= FILM GRID ========= */
-.filmGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-}
-
-.filmGrid.large {
-  grid-template-columns: repeat(8, 1fr);
-}
-
-.filmPoster {
-  aspect-ratio: 2/3;
-  border-radius: 4px;
-  overflow: hidden;
-  background: var(--surface2);
-  position: relative;
-  cursor: pointer;
-  transition: transform 0.2s;
-}
-
-.filmPoster:hover {
-  transform: scale(1.05);
-  z-index: 1;
-}
-
-.filmPoster img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.filmPosterPlaceholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  color: var(--muted);
-  text-align: center;
-  padding: 4px;
-}
-
-.filmPoster .filmRating {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 2px 4px;
-  background: linear-gradient(transparent, rgba(0,0,0,0.9));
-  font-size: 10px;
-  font-weight: 600;
-  color: #fff;
-  text-align: center;
-}
-
-/* ========= FAVORITE GRID ========= */
 .blockTitleRow {
   display: flex;
   align-items: center;
@@ -303,6 +247,7 @@
   border: none;
 }
 
+/* ========= FAVORITE GRID ========= */
 .addFavBtn {
   width: 28px;
   height: 28px;
@@ -392,6 +337,141 @@
 
 .favPoster:hover .favRemove {
   display: flex;
+}
+
+/* ========= BIO ========= */
+.bioText {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.6;
+  margin: 0;
+  opacity: 0.9;
+}
+
+/* ========= SYNC CARD ========= */
+.miniSyncCard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.syncBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(48, 209, 88, 0.12);
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 500;
+  width: fit-content;
+}
+
+.syncBadge.syncing {
+  background: rgba(10, 132, 255, 0.12);
+  color: #0a84ff;
+}
+
+.syncBadge.offline {
+  background: rgba(255, 69, 58, 0.12);
+  color: var(--red);
+}
+
+.syncDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: currentColor;
+  animation: pulse 2s infinite;
+}
+
+.syncBadge.synced .syncDot {
+  animation: none;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.syncMeta {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.syncActions {
+  display: flex;
+  gap: 8px;
+}
+
+.miniBtn {
+  flex: 1;
+  padding: 8px 12px;
+  background: rgba(255,255,255,0.05);
+  border: 0.5px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.miniBtn:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* ========= SETTINGS LIST ========= */
+.settingsList {
+  background: var(--surface);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.settingsItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-align: left;
+}
+
+.settingsItem:hover {
+  background: rgba(255,255,255,0.03);
+}
+
+.settingsItem + .settingsItem {
+  border-top: 0.5px solid var(--border);
+}
+
+.settingsItem span {
+  flex: 1;
+}
+
+.settingsItem svg:first-child {
+  color: var(--muted);
+}
+
+.settingsItem svg:last-child {
+  color: var(--muted);
+  opacity: 0.5;
+}
+
+.settingsItem.danger {
+  color: var(--red);
+}
+
+.settingsItem.danger svg {
+  color: var(--red);
 }
 
 /* ========= FAVORITE MODAL ========= */
@@ -623,232 +703,32 @@
   color: var(--muted);
 }
 
-/* ========= BIO ========= */
-.bioText {
-  font-size: 14px;
-  color: var(--text);
-  line-height: 1.6;
-  margin: 0;
-  opacity: 0.9;
-}
-
-/* ========= SYNC CARD ========= */
-.miniSyncCard {
+/* ========= MODALS ========= */
+.modalHeader {
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.syncBadge {
-  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
-  border-radius: 8px;
-  background: rgba(48, 209, 88, 0.12);
-  color: var(--green);
-  font-size: 12px;
-  font-weight: 500;
-  width: fit-content;
+  justify-content: space-between;
+  margin-bottom: 16px;
 }
 
-.syncBadge.syncing {
-  background: rgba(10, 132, 255, 0.12);
-  color: #0a84ff;
-}
-
-.syncBadge.offline {
-  background: rgba(255, 69, 58, 0.12);
-  color: var(--red);
-}
-
-.syncDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 3px;
-  background: currentColor;
-  animation: pulse 2s infinite;
-}
-
-.syncBadge.synced .syncDot {
-  animation: none;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-.syncMeta {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.syncActions {
-  display: flex;
-  gap: 8px;
-}
-
-.miniBtn {
-  flex: 1;
-  padding: 8px 12px;
-  background: rgba(255,255,255,0.05);
-  border: 0.5px solid var(--border);
-  border-radius: 6px;
-  color: var(--text);
-  font-size: 12px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.miniBtn:hover {
-  background: rgba(255,255,255,0.1);
-}
-
-/* ========= STATS CARD ========= */
-.statsCard {
-  background: var(--surface);
-  border: 0.5px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-}
-
-.statsGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-
-.statsItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.statsNum {
-  font-size: 24px;
+.modalHeader h3 {
+  font-size: 16px;
   font-weight: 700;
   color: var(--text);
-  font-family: 'Poppins', sans-serif;
+  margin: 0;
 }
 
-.statsLabel {
-  font-size: 11px;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* ========= STORAGE CARD ========= */
-.storageCard {
-  background: var(--surface);
-  border: 0.5px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-}
-
-.storageRow {
-  margin-bottom: 12px;
-}
-
-.storageInfo {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-
-.storageLabel {
-  font-size: 12px;
-  color: var(--text);
-}
-
-.storageUsage {
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.storageBar {
-  height: 4px;
-  background: rgba(255,255,255,0.06);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-.storageBarFill {
-  height: 100%;
-  background: var(--green);
-  border-radius: 2px;
-}
-
-.storageBarFill.cloud {
-  background: #0a84ff;
-}
-
-.storageMeta {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 0.5px solid var(--border);
-  font-size: 11px;
-  color: var(--muted);
-}
-
-/* ========= SETTINGS LIST ========= */
-.settingsList {
-  background: var(--surface);
-  border: 0.5px solid var(--border);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.settingsItem {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  background: none;
+.modalClose {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
   border: none;
   color: var(--text);
-  font-size: 14px;
+  font-size: 18px;
   cursor: pointer;
-  transition: background 0.2s;
-  text-align: left;
 }
 
-.settingsItem:hover {
-  background: rgba(255,255,255,0.03);
-}
-
-.settingsItem + .settingsItem {
-  border-top: 0.5px solid var(--border);
-}
-
-.settingsItem span {
-  flex: 1;
-}
-
-.settingsItem svg:first-child {
-  color: var(--muted);
-}
-
-.settingsItem svg:last-child {
-  color: var(--muted);
-  opacity: 0.5;
-}
-
-.settingsItem.danger {
-  color: var(--red);
-}
-
-.settingsItem.danger svg {
-  color: var(--red);
-}
-
-/* ========= MODALS ========= */
 .importModal, .exportModal {
   display: none;
   position: fixed;
@@ -874,31 +754,6 @@
   border: 0.5px solid var(--border);
   border-radius: 16px;
   padding: 20px;
-}
-
-.modalHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.modalHeader h3 {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text);
-  margin: 0;
-}
-
-.modalClose {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.1);
-  border: none;
-  color: var(--text);
-  font-size: 18px;
-  cursor: pointer;
 }
 
 .uploadArea {
@@ -1004,74 +859,60 @@
 /* ========= RESPONSIVE ========= */
 @media (max-width: 768px) {
   .profileHeader {
-    padding: 0 16px;
+    padding: 24px 16px 0;
   }
 
-  .profileHeaderInner {
+  .profileTop {
     flex-direction: column;
     align-items: center;
     text-align: center;
-    gap: 6px;
+    gap: 16px;
   }
 
   .avatar {
     width: 80px;
     height: 80px;
     font-size: 32px;
-    border-width: 3px;
   }
 
-  .profileInfoSection {
+  .profileIdentity {
     text-align: center;
   }
 
   .profileNameRow {
-    display: flex;
-    align-items: center;
     justify-content: center;
-    gap: 6px;
-  }
-
-  .editNameBtn {
-    position: absolute;
-    right: -20px;
   }
 
   .profileName {
     font-size: 20px;
-    margin: 0;
   }
 
   .profileEmail {
     font-size: 12px;
-    margin: 2px 0 0 0;
   }
 
   .profileBio {
-    display: block !important;
+    display: block;
     font-size: 13px;
     color: var(--muted);
     margin: 6px 0 0 0;
-    text-align: center;
   }
 
-  .profileStatsRow {
-    justify-content: center;
+  .profileStats {
     gap: 20px;
-    margin-top: 4px;
   }
 
-  .headerStatNum {
+  .profileStatNum {
     font-size: 18px;
   }
 
-  .headerStatLabel {
+  .profileStatLabel {
     font-size: 9px;
   }
 
   .profileTabs {
     padding: 0 16px;
-    margin-top: 12px;
+    margin-top: 16px;
   }
 
   .profileTab {
@@ -1087,14 +928,6 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
-  }
-
-  .twoColumn .colLeft {
-    order: 1;
-  }
-
-  .twoColumn .colRight {
-    order: 2;
   }
 
   .colRight .contentBlock:first-child {
@@ -1145,17 +978,4 @@
     padding: 7px 10px;
     font-size: 11px;
   }
-
-  .filmGrid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
-  .filmGrid.large {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-/* Hide mobile bio on desktop */
-.profileBio {
-  display: none;
 }
