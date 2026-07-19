@@ -102,12 +102,11 @@ Logit.StatUtils = {
       };
     }
     const hours = Math.floor(mins / 60);
-    const remainingMins = mins % 60;
     const days = Math.floor(mins / 1440);
     const months = (mins / 43800).toFixed(1);
     return {
       main: `${hours}h`,
-      sub: `${remainingMins} min · ${days} days · ${months} months`
+      sub: `${mins.toLocaleString()} min · ${days} days · ${months} months`
     };
   }
 };
