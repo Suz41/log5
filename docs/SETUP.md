@@ -79,12 +79,7 @@ logit/
 │   ├── import.js       # Import logic
 │   ├── export.js       # Export logic
 │   ├── overlays.js     # Overlay UI
-│   ├── posterPicker.js # Poster selection
-│   └── about.js        # About page
-├── assets/
-│   ├── logo.svg        # App logo
-│   └── favicon.svg     # Tab icon
-├── JSON/               # Sample data
+│   └── posterPicker.js # Poster selection
 ├── docs/               # Documentation
 └── LICENSE
 ```
