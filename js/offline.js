@@ -8,6 +8,7 @@ window.Logit = window.Logit || {};
 Logit.Offline = {
   _QUEUE_KEY: 'logit_sync_queue',
   _MAX_RETRIES: 5,
+  _BASE_BACKOFF_MS: 2000, // 2 seconds base
 
   getQueue() {
     try {
@@ -80,9 +81,28 @@ Logit.Offline = {
     }
   },
 
+  /**
+   * Calculate backoff delay for a retried item.
+   * Uses exponential backoff: 2s, 4s, 8s, 16s, 32s.
+   */
+  getBackoffMs(retries) {
+    return this._BASE_BACKOFF_MS * Math.pow(2, retries);
+  },
+
+  /**
+   * Check if an item is ready to retry (backoff time has elapsed).
+   */
+  isReadyToRetry(item) {
+    if (item.retries === 0) return true;
+    var lastAttempt = new Date(item.timestamp).getTime();
+    var backoff = this.getBackoffMs(item.retries);
+    return Date.now() - lastAttempt >= backoff;
+  },
+
   getPending() {
+    var self = this;
     return this.getQueue().filter(function(q) {
-      return !q.synced && (q.retries || 0) < Logit.Offline._MAX_RETRIES;
+      return !q.synced && (q.retries || 0) < self._MAX_RETRIES && self.isReadyToRetry(q);
     });
   },
 

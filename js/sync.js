@@ -21,6 +21,8 @@ Logit.Sync = {
     this._lastSyncTime = parseInt(localStorage.getItem('logit_last_sync')) || 0;
     this.setupAutoSync();
     this.setupOnlineDetection();
+    // Compact queue on init to clean up stale entries
+    if (Logit.Offline) Logit.Offline.compact();
   },
 
   setupAutoSync() {
