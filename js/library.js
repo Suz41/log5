@@ -391,6 +391,8 @@ Logit.LibraryPage = {
       m.dr = $('eDirector').value;
       m.lg = $('eLang').value;
       m.ct = $('eCountry').value;
+      var runtimeVal = parseInt($('eRuntime').value);
+      if (!isNaN(runtimeVal) && runtimeVal >= 0) m.rt = runtimeVal;
       if ($('eWatch').checked) {
         var prevCount = state.movies.filter(function(x) { return x.t === m.t && x.id !== m.id; }).length;
         m.w = 'Rewatch \u00B7 ' + (prevCount + 1) + 'x';

@@ -12,15 +12,14 @@
 
 ---
 
-A clean, offline-first movie logger with cloud sync. Built with vanilla HTML, CSS, and JavaScript — no frameworks, no build tools.
+A clean, cloud-first movie logger. Built with vanilla HTML, CSS, and JavaScript — no frameworks, no build tools.
 
 ## Features
 
-- **Offline-First** — Works without internet, data stored in localStorage
-- **Cloud Sync** — Supabase integration for cross-device backup
+- **Cloud Storage** — All data stored in Supabase, access from any device
 - **TMDB Search** — Find any movie with poster, rating, cast, and metadata
 - **Personal Stats** — Films watched, average rating, runtime, top directors/actors
-- **Profile** — Avatar, favorite films
+- **Profile** — Avatar, favorite films, synced across devices
 - **Dark Theme** — Clean, minimal UI
 - **Responsive** — Works on mobile and desktop
 - **Import/Export** — JSON and text formats
@@ -32,23 +31,20 @@ A clean, offline-first movie logger with cloud sync. Built with vanilla HTML, CS
 | HTML5 | Structure |
 | CSS3 | Styling |
 | JavaScript | Logic (vanilla, no frameworks) |
-| Supabase | Cloud sync & authentication |
+| Supabase | Cloud database & authentication |
 | TMDB API | Movie data & search |
 | GitHub Pages | Hosting |
 
 ## Getting Started
 
 1. Visit [suz41.github.io/logit](https://suz41.github.io/logit)
-2. Set your TMDB API key in Settings
-3. Start logging movies
-
-**Or use locally:**
-1. Download the ZIP from GitHub
-2. Extract and open `index.html` in your browser
+2. Create an account or sign in
+3. Set your TMDB API key in Settings
+4. Start logging movies
 
 ## Important
 
-> **Indian Users:** TMDB API is blocked in India. You need a VPN to search and add movies — even in offline mode. Once added, movies work without VPN.
+> **Indian Users:** TMDB API is blocked in India. You need a VPN to search and add movies. Once added, movies work without VPN.
 
 ## Documentation
 
@@ -77,6 +73,7 @@ logit/
 ├── welcome.html        # Auth page
 ├── config.html         # Supabase config
 ├── reset.html          # Password reset
+├── migrations.sql      # Database setup
 ├── css/                # Stylesheets
 ├── js/                 # JavaScript modules
 ├── docs/               # Documentation

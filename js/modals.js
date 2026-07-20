@@ -110,6 +110,7 @@ Logit.Modals = {
     $('eDirector').value = movie.dr || '';
     $('eLang').value = movie.lg || '';
     $('eCountry').value = movie.ct || '';
+    $('eRuntime').value = movie.rt || '';
     $('eWatch').checked = /^Rewatch/i.test(movie.w || '');
     $('eLogged').value = movie.d || '';
     $('eCast').value = movie.c || '';

@@ -3,18 +3,14 @@
 ## Prerequisites
 
 - A modern web browser (Chrome, Firefox, Safari, Edge)
+- A Supabase account (for cloud storage)
 
 ## Quick Start
 
 1. Go to [suz41.github.io/logit](https://suz41.github.io/logit)
-2. Start logging movies
-
-**Or use locally:**
-1. Download the ZIP from GitHub
-2. Extract it
-3. Open `index.html` in your browser
-
-No build tools, no installation required.
+2. Create an account or sign in
+3. Set your TMDB API key in Settings
+4. Start logging movies
 
 ---
 
@@ -24,7 +20,7 @@ TMDB API is blocked in India. You need a VPN to:
 - Search and add movies
 - Change movie posters
 
-This applies even in offline mode. Once added, movies work without VPN.
+Once added, movies work without VPN.
 
 ---
 
@@ -39,9 +35,13 @@ This applies even in offline mode. Once added, movies work without VPN.
 
 ---
 
-## Cloud Sync
+## Cloud Storage
 
-Cloud sync is built-in and pre-configured. Sign up from the welcome page to enable it. Movies sync automatically in the background.
+All data is stored in Supabase cloud database. Sign up from the welcome page to get started. Your data is synced automatically and accessible from any device.
+
+### Database Setup
+
+Run the SQL in `migrations.sql` in your Supabase SQL Editor to set up the required tables and RLS policies.
 
 ---
 
@@ -56,6 +56,7 @@ logit/
 ├── welcome.html        # Welcome/auth page
 ├── config.html         # Supabase config page
 ├── reset.html          # Password reset
+├── migrations.sql      # Database setup SQL
 ├── css/
 │   ├── main.css        # Global styles
 │   ├── components.css  # Reusable components
@@ -71,9 +72,9 @@ logit/
 │   ├── app.js          # Main app init
 │   ├── config.js       # API keys, Supabase config
 │   ├── constants.js    # Language/genre maps
-│   ├── storage.js      # localStorage helpers
+│   ├── storage.js      # Cloud storage operations
 │   ├── utils.js        # Utility functions
-│   ├── movies.js       # Movie CRUD operations
+│   ├── movies.js       # Movie helpers
 │   ├── search.js       # TMDB search
 │   ├── movieFactory.js # Movie object builder
 │   ├── modals.js       # Modal logic
@@ -84,8 +85,6 @@ logit/
 │   ├── profile.js      # Profile page logic
 │   ├── auth.js         # Authentication
 │   ├── supabase.js     # Supabase client
-│   ├── sync.js         # Cloud sync engine
-│   ├── offline.js      # Offline queue
 │   ├── import.js       # Import logic
 │   ├── export.js       # Export logic
 │   ├── overlays.js     # Overlay UI
@@ -103,16 +102,5 @@ No build tools required. Edit files directly and refresh the browser.
 ### Tips
 
 - Use Chrome DevTools for debugging
-- Check localStorage in Application tab
+- Check Supabase dashboard for data
 - Test on mobile using device emulation
-- Clear localStorage to reset app state
-
-### Common Issues
-
-**CORS errors with images:**
-- TMDB images may be blocked in some browsers
-- Use a local proxy or CORS extension for development
-
-**localStorage full:**
-- Max size is ~5MB
-- Export and clear old data periodically

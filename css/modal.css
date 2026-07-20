@@ -432,8 +432,22 @@
   font-size: 13px;
 }
 
+.metaInputSmall {
+  width: 60px;
+  height: 28px;
+  margin-top: 0;
+  padding: 0 6px;
+  font-size: 12px;
+  text-align: center;
+}
+
 .meta.editing .metaInput {
   display: block;
+}
+.meta.editing .metaInputSmall {
+  display: inline-block;
+  width: 60px;
+  height: 28px;
 }
 .meta.editing h4 {
   display: none;

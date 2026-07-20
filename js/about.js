@@ -1,52 +1,27 @@
 window.Logit = window.Logit || {};
 
 Logit.AboutPage = {
-  init() {
-    const esc = Logit.Utils.esc;
-    const $ = Logit.Utils.byId;
+  async init() {
+    var $ = Logit.Utils.byId;
 
-    function renderStorage() {
-      const { total, keys } = Logit.Storage.getStorageSize();
-      const fmt = Logit.Storage.formatBytes(total);
+    async function renderStorage() {
+      var usage = await Logit.Storage.getCloudStorageUsage();
+      var fmt = Logit.Storage.formatBytes(usage.bytes);
 
       $('storageTotal').innerText = fmt.val;
       $('storageUnit').innerText = fmt.unit;
-      $('storageSub').innerText = total.toLocaleString() + ' bytes used of ~5 MB limit';
+      $('storageSub').innerText = usage.count + ' movies synced to cloud';
 
-      const pct = Math.min((total / 5242880) * 100, 100);
+      var pct = Math.min((usage.bytes / 524288000) * 100, 100);
       $('storageFill').style.width = pct + '%';
-
-      const container = $('storageKeys');
-      container.innerHTML = '';
-      keys.sort((a, b) => b.size - a.size);
-
-      let keysHtml = '';
-      keys.forEach(item => {
-        const kFmt = Logit.Storage.formatBytes(item.size);
-        let dotClass = 'other';
-        if (item.key === 'movies') dotClass = 'movies';
-        else if (item.key === 'grid') dotClass = 'grid';
-
-        keysHtml += `
-          <div class="storageKey">
-            <div class="storageKeyLeft">
-              <div class="storageDot ${dotClass}"></div>
-              <div class="storageKeyName">${esc(item.key)}</div>
-            </div>
-            <div class="storageKeySize">${kFmt.val} ${kFmt.unit}</div>
-          </div>
-        `;
-      });
-      container.innerHTML = keysHtml;
     }
 
-    renderStorage();
+    await renderStorage();
 
-    // ========= EVENT LISTENERS =========
-    const apiKeyBtn = document.querySelector('[data-action="setApiKey"]');
+    var apiKeyBtn = document.querySelector('[data-action="setApiKey"]');
     if (apiKeyBtn) {
       apiKeyBtn.addEventListener('click', function() {
-        const key = prompt('Enter your TMDB API Key:', Logit.Config.getApiKey());
+        var key = prompt('Enter your TMDB API Key:', Logit.Config.getApiKey());
         if (key !== null) {
           Logit.Config.setApiKey(key);
           location.reload();
@@ -54,12 +29,16 @@ Logit.AboutPage = {
       });
     }
 
-    const clearBtn = document.querySelector('[data-action="clearAllData"]');
+    var clearBtn = document.querySelector('[data-action="clearAllData"]');
     if (clearBtn) {
-      clearBtn.addEventListener('click', function() {
-        if (!confirm('Clear all movie data? This cannot be undone.')) return;
-        localStorage.removeItem('movies');
-        renderStorage();
+      clearBtn.addEventListener('click', async function() {
+        if (!confirm('Clear all movie data from cloud? This cannot be undone.')) return;
+        var client = Logit.Supabase.getClient();
+        var userId = localStorage.getItem('logit_user_id');
+        if (client && userId) {
+          await client.from('movies').delete().eq('user_id', userId);
+        }
+        await renderStorage();
         alert('All movie data cleared.');
       });
     }
