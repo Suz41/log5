@@ -18,7 +18,64 @@ window.Logit = window.Logit || {};
  */
 Logit.Offline = {
   _QUEUE_KEY: 'logit_sync_queue',
-  _QUEUE_LOCK: false,
+  _syncLockHolder: null,
+  _syncLockTimeoutId: null,
+  _DEFAULT_LOCK_TIMEOUT_MS: 30000,
+
+  /**
+   * Acquire the sync lock (mutex).
+   * Returns true if lock acquired, false if already held.
+   * @param {Object} [opts]
+   * @param {number} [opts.timeout] - Auto-release after this many ms (default 30s)
+   * @param {string} [opts.holder] - Identifier for who holds the lock
+   * @returns {boolean}
+   */
+  acquireSyncLock(opts) {
+    if (this._syncLockHolder !== null) {
+      return false;
+    }
+    const timeout = (opts && opts.timeout) || this._DEFAULT_LOCK_TIMEOUT_MS;
+    const holder = (opts && opts.holder) || 'sync';
+    this._syncLockHolder = holder;
+
+    if (this._syncLockTimeoutId !== null) {
+      clearTimeout(this._syncLockTimeoutId);
+      this._syncLockTimeoutId = null;
+    }
+
+    this._syncLockTimeoutId = setTimeout(() => {
+      this.releaseSyncLock();
+    }, timeout);
+
+    return true;
+  },
+
+  /**
+   * Release the sync lock.
+   */
+  releaseSyncLock() {
+    this._syncLockHolder = null;
+    if (this._syncLockTimeoutId !== null) {
+      clearTimeout(this._syncLockTimeoutId);
+      this._syncLockTimeoutId = null;
+    }
+  },
+
+  /**
+   * Check if sync lock is currently held.
+   * @returns {boolean}
+   */
+  isSyncLocked() {
+    return this._syncLockHolder !== null;
+  },
+
+  /**
+   * Get the identifier of the current lock holder.
+   * @returns {string|null}
+   */
+  getLockHolder() {
+    return this._syncLockHolder;
+  },
 
   /**
    * Get sync queue from localStorage
@@ -55,6 +112,10 @@ Logit.Offline = {
    * @returns {Object} Queue item
    */
   enqueue(action, entity, entityId, data) {
+    if (this.isSyncLocked()) {
+      return null;
+    }
+
     const queue = this.getQueue();
     
     const item = {

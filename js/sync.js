@@ -70,6 +70,10 @@ Logit.Sync = {
       return { success: false, message: 'No internet connection' };
     }
 
+    if (!Logit.Offline.acquireSyncLock({ holder: 'sync' })) {
+      return { success: false, message: 'Sync already in progress (lock held)' };
+    }
+
     this._syncInProgress = true;
     this.notifySyncStatus('syncing');
 
@@ -105,6 +109,7 @@ Logit.Sync = {
       return { success: false, message: e.message };
     } finally {
       this._syncInProgress = false;
+      Logit.Offline.releaseSyncLock();
     }
   },
 
