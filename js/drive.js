@@ -47,11 +47,12 @@ Logit.Drive = {
   },
 
   /**
-   * Request OAuth access token from user via Google popup.
+   * Request OAuth access token from user via Google popup if needed.
    * @param {Function} [onSuccess]
    * @param {Function} [onError]
+   * @param {boolean} [forcePrompt=false]
    */
-  requestAuth(onSuccess, onError) {
+  requestAuth(onSuccess, onError, forcePrompt = false) {
     this._onAuthSuccess = onSuccess || null;
     this._onAuthError = onError || null;
 
@@ -66,7 +67,12 @@ Logit.Drive = {
       return;
     }
 
-    this._tokenClient.requestAccessToken({ prompt: 'consent' });
+    if (!forcePrompt && this._accessToken) {
+      if (onSuccess) onSuccess({ access_token: this._accessToken });
+      return;
+    }
+
+    this._tokenClient.requestAccessToken(forcePrompt ? { prompt: 'consent' } : {});
   },
 
   /**
