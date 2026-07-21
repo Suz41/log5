@@ -146,6 +146,7 @@ body {
   flex-direction: column;
   cursor: pointer;
   min-height: 0;
+  position: relative;
 }
 
 .movie img {
@@ -237,13 +238,12 @@ body.hide-dates .movieDate {
   box-shadow: 0 0 4px var(--red);
 }
 
-.movie:has(.missingDot) {
+.movie.hasMissing {
   outline: 2px solid var(--red);
   outline-offset: -2px;
-  position: relative;
 }
 
-.movie:has(.missingDot)::after {
+.movie.hasMissing::after {
   content: 'Missing metadata';
   position: absolute;
   bottom: 100%;
@@ -262,7 +262,7 @@ body.hide-dates .movieDate {
   z-index: 10;
 }
 
-.movie:has(.missingDot):hover::after {
+.movie.hasMissing:hover::after {
   opacity: 1;
 }
 

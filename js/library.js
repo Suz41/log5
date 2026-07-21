@@ -61,7 +61,7 @@ Logit.LibraryPage = {
       var missing = getMissingFields(movie);
       var missingBadge = missing.length > 0 ? ' <span class="missingDot"></span>' : '';
       var card = document.createElement('div');
-      card.className = 'movie';
+      card.className = 'movie' + (missing.length > 0 ? ' hasMissing' : '');
       card.dataset.id = movie.id;
       if (missing.length > 0) {
         card.title = 'Missing: ' + missing.join(', ');
