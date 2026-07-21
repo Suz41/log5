@@ -308,7 +308,7 @@ Logit.ProfilePage = {
       var { data, error } = await client.from('settings').select('avatar').eq('user_id', userId).single();
       if (error) { console.warn('Avatar load error:', error.message); return; }
       if (data && data.avatar) {
-        self._setAvatar(data.avatar);
+        this._setAvatar(data.avatar);
       }
     } catch (e) { console.warn('Avatar load failed:', e); }
   },
