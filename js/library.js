@@ -44,18 +44,28 @@ Logit.LibraryPage = {
       e.target.src = Logit.POSTER_FALLBACK;
     }
 
-    function isMissingMetadata(movie) {
-      return !movie.rt || !movie.dr || !movie.g || !movie.lg || !movie.ct;
+    function getMissingFields(movie) {
+      var missing = [];
+      if (!movie.rt) missing.push('Runtime');
+      if (!movie.dr) missing.push('Director');
+      if (!movie.g) missing.push('Genres');
+      if (!movie.lg) missing.push('Language');
+      if (!movie.ct) missing.push('Country');
+      return missing;
     }
 
     function buildMovieCard(movie) {
       var date = new Date(movie.d);
       var formatted = Logit.Utils.formatDateShort(date);
       var rewatchBadge = Logit.Utils.isRewatch(movie) ? ' <span class="rewatch">R</span>' : '';
-      var missingBadge = isMissingMetadata(movie) ? ' <span class="missingDot"></span>' : '';
+      var missing = getMissingFields(movie);
+      var missingBadge = missing.length > 0 ? ' <span class="missingDot"></span>' : '';
       var card = document.createElement('div');
       card.className = 'movie';
       card.dataset.id = movie.id;
+      if (missing.length > 0) {
+        card.title = 'Missing: ' + missing.join(', ');
+      }
       card.innerHTML = '<img src="' + esc(img(movie.sp)) + '" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'' + Logit.POSTER_FALLBACK + '\'">'
         + '<div class="movieDate"><span class="day">' + formatted.day + '</span> ' + formatted.month + rewatchBadge + missingBadge + '</div>';
       return card;
@@ -112,10 +122,23 @@ Logit.LibraryPage = {
         var section = document.createElement('div');
         section.className = 'monthSection' + (state.openMonths.has(key) ? ' active' : '');
 
-        var hasMissing = group.movies.some(isMissingMetadata);
+        var hasMissing = group.movies.some(function(m) { return getMissingFields(m).length > 0; });
 
         var head = document.createElement('div');
         head.className = 'monthHead';
+        if (hasMissing) {
+          var missingFieldCounts = {};
+          group.movies.forEach(function(m) {
+            getMissingFields(m).forEach(function(f) {
+              missingFieldCounts[f] = (missingFieldCounts[f] || 0) + 1;
+            });
+          });
+          var tooltipParts = [];
+          for (var field in missingFieldCounts) {
+            tooltipParts.push(field + ': ' + missingFieldCounts[field]);
+          }
+          head.title = 'Missing metadata — ' + tooltipParts.join(', ');
+        }
         var left = document.createElement('div');
         left.className = 'monthLeft';
         var arrow = document.createElement('div');
