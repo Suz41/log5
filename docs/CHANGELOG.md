@@ -16,12 +16,16 @@ All notable changes to Log!t will be documented in this file.
 - Proper RFC 2046 multipart body formatting for Google Drive file creation
 - Automatic handling and clearance of expired OAuth tokens (401 response handling)
 - Reorganized profile settings into 4 clean, distinct sections: Account, Google Drive, Backup & Data, and Danger Zone
+- Cleaned up 100+ lines of unused legacy CSS layout rules from `css/profile.css`
 - Fixed mobile vertical spacing gaps and element alignment across settings content blocks
 
 ### Fixed
 - Fixed OAuth token callback promise resolution timing before updating status UI
 - Fixed username text offset by removing inline element flex width skewing
 - Fixed mobile spacing collapse where `.contentBlock` margin was overridden to `0`
+
+### Removed
+- Completely removed all favicon asset files and icon link tags from all HTML pages
 
 ## [3.2.0] - 2026-07-20
 
