@@ -2,6 +2,24 @@
 
 All notable changes to Log!t will be documented in this file.
 
+## [3.2.0] - 2026-07-20
+
+### Added
+- Google Drive backup/restore integration
+- Auto-backup to Google Drive after every movie change
+- "Logit" folder created automatically on Google Drive
+- Backup/restore buttons in profile settings
+- Red dot indicators for movies with missing metadata
+- Red border on incomplete movie cards
+- Hover tooltips showing missing fields
+- Month headers show red dots when containing incomplete movies
+- Detailed documentation with architecture diagrams
+
+### Changed
+- Removed year from month labels (back to just month name)
+- Updated all documentation (README, FLOWCHART, SECURITY, SETUP, TUTORIAL, SIGNUP, FAQ, CONTRIBUTING)
+- Updated about page with Google Drive in tech stack
+
 ## [3.1.0] - 2026-07-20
 
 ### Fixed
