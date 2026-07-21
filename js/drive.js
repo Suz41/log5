@@ -2,7 +2,6 @@ window.Logit = window.Logit || {};
 
 /**
  * Google Drive Integration
- * Uses Google API Client Library (gapi) to avoid CORS issues
  */
 Logit.Drive = {
   _tokenClient: null,
@@ -10,13 +9,8 @@ Logit.Drive = {
   _FOLDER_NAME: 'Logit',
   _FOLDER_KEY: 'logit_drive_folder_id',
   _TOKEN_KEY: 'logit_drive_token',
-  _API_KEY: 'AIzaSyD-ExampleKey', // Not needed with OAuth, but gapi requires it
 
-  /**
-   * Initialize Google Identity Services + gapi
-   */
   init() {
-    // Restore saved token
     var saved = localStorage.getItem(this._TOKEN_KEY);
     if (saved) this._accessToken = saved;
 
@@ -35,112 +29,13 @@ Logit.Drive = {
     });
   },
 
-  /**
-   * Request Google Drive access
-   */
   requestAuth(onSuccess) {
     this._onAuthSuccess = onSuccess || function() {};
-    // Always prompt for fresh token (previous may be expired)
     this._accessToken = null;
     localStorage.removeItem(this._TOKEN_KEY);
     this._tokenClient.requestAccessToken();
   },
 
-  /**
-   * Make authenticated request to Google Drive API using gapi
-   */
-  async _gapiRequest(method, url, body) {
-    return new Promise((resolve, reject) => {
-      var xhr = new XMLHttpRequest();
-      xhr.open(method, url, true);
-      xhr.setRequestHeader('Authorization', 'Bearer ' + this._accessToken);
-      if (body) {
-        xhr.setRequestHeader('Content-Type', 'application/json');
-      }
-      xhr.onload = function() {
-        if (xhr.status === 401) {
-          // Token expired - clear everywhere
-          Logit.Drive._accessToken = null;
-          localStorage.removeItem('logit_drive_token');
-          reject(new Error('Token expired. Please click Backup to Drive again.'));
-          return;
-        }
-        if (xhr.status >= 200 && xhr.status < 300) {
-          resolve(JSON.parse(xhr.responseText || '{}'));
-        } else {
-          reject(new Error('API error: ' + xhr.status));
-        }
-      };
-      xhr.onerror = function() {
-        reject(new Error('Network error'));
-      };
-      xhr.send(body ? JSON.stringify(body) : null);
-    });
-  },
-
-  /**
-   * Upload file using XMLHttpRequest (avoids CORS multipart issues)
-   */
-  async _uploadFile(name, blob, folderId) {
-    return new Promise((resolve, reject) => {
-      var metadata = {
-        name: name,
-        mimeType: 'application/json'
-      };
-      if (folderId) metadata.parents = [folderId];
-
-      var form = new FormData();
-      form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
-      form.append('file', blob);
-
-      var xhr = new XMLHttpRequest();
-      xhr.open('POST', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', true);
-      xhr.setRequestHeader('Authorization', 'Bearer ' + this._accessToken);
-      xhr.onload = function() {
-        if (xhr.status === 401) {
-          Logit.Drive._accessToken = null;
-          localStorage.removeItem('logit_drive_token');
-          reject(new Error('Token expired. Please click Backup to Drive again.'));
-          return;
-        }
-        if (xhr.status >= 200 && xhr.status < 300) {
-          resolve(JSON.parse(xhr.responseText));
-        } else {
-          reject(new Error('Upload failed: ' + xhr.status));
-        }
-      };
-      xhr.onerror = function() {
-        reject(new Error('Network error during upload'));
-      };
-      xhr.send(form);
-    });
-  },
-
-  /**
-   * Download file content
-   */
-  async _downloadFile(fileId) {
-    return new Promise((resolve, reject) => {
-      var xhr = new XMLHttpRequest();
-      xhr.open('GET', 'https://www.googleapis.com/drive/v3/files/' + fileId + '?alt=media', true);
-      xhr.setRequestHeader('Authorization', 'Bearer ' + this._accessToken);
-      xhr.onload = function() {
-        if (xhr.status >= 200 && xhr.status < 300) {
-          resolve(xhr.responseText);
-        } else {
-          reject(new Error('Download failed: ' + xhr.status));
-        }
-      };
-      xhr.onerror = function() {
-        reject(new Error('Network error during download'));
-      };
-      xhr.send();
-    });
-  },
-
-  /**
-   * Backup movies to Google Drive
-   */
   async backup() {
     if (!this._accessToken) {
       return { success: false, message: 'Not authenticated with Google Drive' };
@@ -159,16 +54,12 @@ Logit.Drive = {
       var content = JSON.stringify(backupData, null, 2);
       var blob = new Blob([content], { type: 'application/json' });
 
-      // Generate dynamic filename
       var now = new Date();
       var dateStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
       var fileName = 'logit-' + movies.length + '-movies-' + dateStr + '.json';
 
-      // Ensure Logit folder exists
       var folderId = await this._getOrCreateFolder();
-
-      // Check if backup file already exists in folder
-      var existingFileId = await this._findFileInFolder(fileName, folderId);
+      var existingFileId = await this._findFile(fileName, folderId);
 
       if (existingFileId) {
         await this._updateFile(existingFileId, blob);
@@ -183,9 +74,6 @@ Logit.Drive = {
     }
   },
 
-  /**
-   * Restore movies from Google Drive
-   */
   async restore() {
     if (!this._accessToken) {
       return { success: false, message: 'Not authenticated with Google Drive' };
@@ -193,16 +81,16 @@ Logit.Drive = {
 
     try {
       var folderId = await this._getOrCreateFolder();
+      var files = await this._listFiles(folderId);
 
-      // Find latest backup file
-      var query = encodeURIComponent("'" + folderId + "' in parents and name contains 'logit-' and name contains '-movies-' and trashed=false");
-      var data = await this._gapiRequest('GET', 'https://www.googleapis.com/drive/v3/files?q=' + query + '&fields=files(id,name,modifiedTime)&orderBy=modifiedTime%20desc');
-
-      if (!data.files || data.files.length === 0) {
+      if (files.length === 0) {
         return { success: false, message: 'No backup found in Logit folder' };
       }
 
-      var latestFile = data.files[0];
+      // Sort by name (includes date) to get latest
+      files.sort(function(a, b) { return b.name.localeCompare(a.name); });
+      var latestFile = files[0];
+
       var content = await this._downloadFile(latestFile.id);
       var backupData = JSON.parse(content);
 
@@ -226,14 +114,10 @@ Logit.Drive = {
     }
   },
 
-  /**
-   * Load current settings for backup
-   */
   async _loadSettings() {
     var client = Logit.Supabase.getClient();
     var userId = localStorage.getItem('logit_user_id');
     if (!client || !userId) return {};
-
     try {
       var { data } = await client.from('settings').select('*').eq('user_id', userId).single();
       return data || {};
@@ -242,52 +126,134 @@ Logit.Drive = {
     }
   },
 
-  /**
-   * Get or create Logit folder
-   */
+  async _apiCall(method, url, body) {
+    return new Promise(function(resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open(method, url, true);
+      xhr.setRequestHeader('Authorization', 'Bearer ' + Logit.Drive._accessToken);
+      if (body) xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.onload = function() {
+        if (xhr.status === 401) {
+          Logit.Drive._accessToken = null;
+          localStorage.removeItem('logit_drive_token');
+          reject(new Error('Token expired. Click Backup to Drive again.'));
+          return;
+        }
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve(xhr.responseText ? JSON.parse(xhr.responseText) : {});
+        } else {
+          reject(new Error('API error ' + xhr.status));
+        }
+      };
+      xhr.onerror = function() { reject(new Error('Network error')); };
+      xhr.send(body ? JSON.stringify(body) : null);
+    });
+  },
+
   async _getOrCreateFolder() {
     var cached = localStorage.getItem(this._FOLDER_KEY);
     if (cached) return cached;
 
-    var query = encodeURIComponent("name='" + this._FOLDER_NAME + "' and mimeType='application/vnd.google-apps.folder' and trashed=false");
-    var data = await this._gapiRequest('GET', 'https://www.googleapis.com/drive/v3/files?q=' + query + '&fields=files(id)');
+    var data = await this._apiCall('GET', 'https://www.googleapis.com/drive/v3/files?spaces=drive&fields=files(id,name,mimeType)');
 
-    if (data.files && data.files.length > 0) {
-      localStorage.setItem(this._FOLDER_KEY, data.files[0].id);
-      return data.files[0].id;
+    if (data.files) {
+      var folder = data.files.find(function(f) {
+        return f.name === 'Logit' && f.mimeType === 'application/vnd.google-apps.folder';
+      });
+      if (folder) {
+        localStorage.setItem(this._FOLDER_KEY, folder.id);
+        return folder.id;
+      }
     }
 
-    // Create folder
-    var folder = await this._gapiRequest('POST', 'https://www.googleapis.com/drive/v3/files', {
-      name: this._FOLDER_NAME,
+    var newFolder = await this._apiCall('POST', 'https://www.googleapis.com/drive/v3/files', {
+      name: 'Logit',
       mimeType: 'application/vnd.google-apps.folder'
     });
 
-    localStorage.setItem(this._FOLDER_KEY, folder.id);
-    return folder.id;
+    localStorage.setItem(this._FOLDER_KEY, newFolder.id);
+    return newFolder.id;
   },
 
-  async _findFileInFolder(name, folderId) {
-    var query = encodeURIComponent("name='" + name + "' and '" + folderId + "' in parents and trashed=false");
-    var data = await this._gapiRequest('GET', 'https://www.googleapis.com/drive/v3/files?q=' + query + '&fields=files(id)');
-    return data.files && data.files.length > 0 ? data.files[0].id : null;
+  async _findFile(name, folderId) {
+    var data = await this._apiCall('GET', 'https://www.googleapis.com/drive/v3/files?spaces=drive&fields=files(id,name)');
+    if (!data.files) return null;
+
+    var file = data.files.find(function(f) {
+      return f.name === name;
+    });
+    return file ? file.id : null;
+  },
+
+  async _listFiles(folderId) {
+    var data = await this._apiCall('GET', 'https://www.googleapis.com/drive/v3/files?spaces=drive&fields=files(id,name)');
+    if (!data.files) return [];
+
+    return data.files.filter(function(f) {
+      return f.name && f.name.indexOf('logit-') === 0 && f.name.indexOf('-movies-') > 0;
+    });
+  },
+
+  async _uploadFile(name, blob, folderId) {
+    return new Promise(function(resolve, reject) {
+      var metadata = { name: name, parents: [folderId], mimeType: 'application/json' };
+      var form = new FormData();
+      form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
+      form.append('file', blob);
+
+      var xhr = new XMLHttpRequest();
+      xhr.open('POST', 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', true);
+      xhr.setRequestHeader('Authorization', 'Bearer ' + Logit.Drive._accessToken);
+      xhr.onload = function() {
+        if (xhr.status === 401) {
+          Logit.Drive._accessToken = null;
+          localStorage.removeItem('logit_drive_token');
+          reject(new Error('Token expired. Click Backup to Drive again.'));
+          return;
+        }
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve(JSON.parse(xhr.responseText));
+        } else {
+          reject(new Error('Upload failed: ' + xhr.status));
+        }
+      };
+      xhr.onerror = function() { reject(new Error('Network error')); };
+      xhr.send(form);
+    });
   },
 
   async _updateFile(fileId, blob) {
-    return new Promise((resolve, reject) => {
+    return new Promise(function(resolve, reject) {
       var xhr = new XMLHttpRequest();
       xhr.open('PATCH', 'https://www.googleapis.com/upload/drive/v3/files/' + fileId + '?uploadType=media', true);
-      xhr.setRequestHeader('Authorization', 'Bearer ' + this._accessToken);
+      xhr.setRequestHeader('Authorization', 'Bearer ' + Logit.Drive._accessToken);
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.onload = function() {
         if (xhr.status >= 200 && xhr.status < 300) {
-          resolve(JSON.parse(xhr.responseText || '{}'));
+          resolve(xhr.responseText ? JSON.parse(xhr.responseText) : {});
         } else {
           reject(new Error('Update failed: ' + xhr.status));
         }
       };
       xhr.onerror = function() { reject(new Error('Network error')); };
       xhr.send(blob);
+    });
+  },
+
+  async _downloadFile(fileId) {
+    return new Promise(function(resolve, reject) {
+      var xhr = new XMLHttpRequest();
+      xhr.open('GET', 'https://www.googleapis.com/drive/v3/files/' + fileId + '?alt=media', true);
+      xhr.setRequestHeader('Authorization', 'Bearer ' + Logit.Drive._accessToken);
+      xhr.onload = function() {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve(xhr.responseText);
+        } else {
+          reject(new Error('Download failed: ' + xhr.status));
+        }
+      };
+      xhr.onerror = function() { reject(new Error('Network error')); };
+      xhr.send();
     });
   },
 
