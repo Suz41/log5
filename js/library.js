@@ -44,15 +44,20 @@ Logit.LibraryPage = {
       e.target.src = Logit.POSTER_FALLBACK;
     }
 
+    function isMissingMetadata(movie) {
+      return !movie.rt || !movie.dr || !movie.g || !movie.lg || !movie.ct;
+    }
+
     function buildMovieCard(movie) {
       var date = new Date(movie.d);
       var formatted = Logit.Utils.formatDateShort(date);
       var rewatchBadge = Logit.Utils.isRewatch(movie) ? ' <span class="rewatch">R</span>' : '';
+      var missingBadge = isMissingMetadata(movie) ? ' <span class="missingDot"></span>' : '';
       var card = document.createElement('div');
       card.className = 'movie';
       card.dataset.id = movie.id;
       card.innerHTML = '<img src="' + esc(img(movie.sp)) + '" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'' + Logit.POSTER_FALLBACK + '\'">'
-        + '<div class="movieDate"><span class="day">' + formatted.day + '</span> ' + formatted.month + rewatchBadge + '</div>';
+        + '<div class="movieDate"><span class="day">' + formatted.day + '</span> ' + formatted.month + rewatchBadge + missingBadge + '</div>';
       return card;
     }
 
@@ -107,6 +112,8 @@ Logit.LibraryPage = {
         var section = document.createElement('div');
         section.className = 'monthSection' + (state.openMonths.has(key) ? ' active' : '');
 
+        var hasMissing = group.movies.some(isMissingMetadata);
+
         var head = document.createElement('div');
         head.className = 'monthHead';
         var left = document.createElement('div');
@@ -116,6 +123,11 @@ Logit.LibraryPage = {
         arrow.textContent = '\u203A';
         var h2 = document.createElement('h2');
         h2.textContent = group.label;
+        if (hasMissing) {
+          var dot = document.createElement('span');
+          dot.className = 'monthMissingDot';
+          h2.appendChild(dot);
+        }
         left.append(arrow, h2);
         var count = document.createElement('span');
         count.className = 'count';
