@@ -6,7 +6,7 @@ window.Logit = window.Logit || {};
  */
 Logit.Drive = {
   _CLIENT_ID: '526761149863-6hd6eg1mqjnj41ajtesr2k8g7ch70ail.apps.googleusercontent.com',
-  _SCOPE: 'https://www.googleapis.com/auth/drive.file',
+  _SCOPE: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
   _FOLDER_NAME: 'Logit',
   _FOLDER_KEY: 'logit_drive_folder_id',
   _TOKEN_KEY: 'logit_drive_token',
@@ -15,8 +15,6 @@ Logit.Drive = {
 
   _tokenClient: null,
   _accessToken: null,
-  _onAuthSuccess: null,
-  _onAuthError: null,
 
   /**
    * Initialize Google Auth Token Client & load stored credentials.
@@ -34,17 +32,10 @@ Logit.Drive = {
         callback: (response) => {
           if (response.error) {
             console.error('[Drive] Auth error:', response);
-            if (this._onAuthError) this._onAuthError(response);
             return;
           }
           this._accessToken = response.access_token;
           localStorage.setItem(this._TOKEN_KEY, response.access_token);
-          console.log('[Drive] Authentication successful');
-          
-          // Fetch user info right after auth
-          this.getUserInfo().catch(e => console.warn(e));
-
-          if (this._onAuthSuccess) this._onAuthSuccess(response);
         },
       });
     } else {
@@ -53,15 +44,12 @@ Logit.Drive = {
   },
 
   /**
-   * Request OAuth access token from user via Google popup if needed.
+   * Request OAuth access token from user via Google popup.
    * @param {Function} [onSuccess]
    * @param {Function} [onError]
    * @param {boolean} [forcePrompt=false]
    */
   requestAuth(onSuccess, onError, forcePrompt = false) {
-    this._onAuthSuccess = onSuccess || null;
-    this._onAuthError = onError || null;
-
     if (!this._tokenClient) {
       this.init();
     }
@@ -78,6 +66,26 @@ Logit.Drive = {
       return;
     }
 
+    this._tokenClient.callback = async (response) => {
+      if (response.error) {
+        console.error('[Drive] Auth error:', response);
+        if (onError) onError(response);
+        return;
+      }
+
+      this._accessToken = response.access_token;
+      localStorage.setItem(this._TOKEN_KEY, response.access_token);
+      console.log('[Drive] Authentication successful');
+
+      try {
+        await this.getUserInfo();
+      } catch (e) {
+        console.warn('[Drive] Failed to fetch user info during auth:', e);
+      }
+
+      if (onSuccess) onSuccess(response);
+    };
+
     this._tokenClient.requestAccessToken(forcePrompt ? { prompt: 'consent' } : {});
   },
 
@@ -90,11 +98,41 @@ Logit.Drive = {
   },
 
   /**
-   * Fetch connected Google user profile info.
-   * @returns {Promise<{email: string, name: string, photo: string} | null>}
+   * Fetch connected Google user profile info (email, name, picture).
+   * @returns {Promise<{email: string, name: string, picture: string} | null>}
    */
   async getUserInfo() {
     if (!this._accessToken) return null;
+
+    // 1. Try Google UserInfo API endpoint
+    try {
+      const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+        headers: { 'Authorization': `Bearer ${this._accessToken}` }
+      });
+
+      if (res.status === 401) {
+        this.clearToken();
+        return null;
+      }
+
+      if (res.ok) {
+        const data = await res.json();
+        if (data && (data.email || data.name)) {
+          const info = {
+            email: data.email || '',
+            name: data.name || '',
+            picture: data.picture || ''
+          };
+          if (info.email) localStorage.setItem(this._USER_EMAIL_KEY, info.email);
+          if (info.name) localStorage.setItem(this._USER_NAME_KEY, info.name);
+          return info;
+        }
+      }
+    } catch (e) {
+      console.warn('[Drive] OAuth2 userinfo fetch failed:', e);
+    }
+
+    // 2. Fallback to Drive API about endpoint
     try {
       const res = await this._apiFetch('https://www.googleapis.com/drive/v3/about?fields=user');
       const data = await res.json();
@@ -102,17 +140,17 @@ Logit.Drive = {
         const info = {
           email: data.user.emailAddress || '',
           name: data.user.displayName || '',
-          photo: data.user.photoLink || ''
+          picture: data.user.photoLink || ''
         };
         if (info.email) localStorage.setItem(this._USER_EMAIL_KEY, info.email);
         if (info.name) localStorage.setItem(this._USER_NAME_KEY, info.name);
         return info;
       }
-      return null;
     } catch (e) {
-      console.warn('[Drive] Failed to fetch user info:', e);
-      return null;
+      console.warn('[Drive] Drive about API fetch failed:', e);
     }
+
+    return null;
   },
 
   /**
@@ -152,7 +190,6 @@ Logit.Drive = {
     }
 
     try {
-      // 1. Gather local data
       const movies = (await Logit.Storage.loadMovies()) || [];
       const settings = await this._loadSettings();
       const backupData = {
@@ -170,13 +207,9 @@ Logit.Drive = {
         String(now.getDate()).padStart(2, '0');
       const fileName = `logit-${movies.length}-movies-${dateStr}.json`;
 
-      // 2. Ensure destination folder exists
       const folderId = await this._getOrCreateFolder();
-
-      // 3. Check for existing backup file with same name
       const existingFileId = await this._findFileByName(fileName, folderId);
 
-      // 4. Save file
       if (existingFileId) {
         await this._updateFileContent(existingFileId, content);
       } else {
@@ -207,7 +240,6 @@ Logit.Drive = {
         return { success: false, message: 'No backup files found in Logit folder' };
       }
 
-      // Sort files by modifiedTime descending or name descending
       files.sort((a, b) => {
         const timeA = a.createdTime || a.modifiedTime || a.name;
         const timeB = b.createdTime || b.modifiedTime || b.name;
@@ -245,9 +277,6 @@ Logit.Drive = {
   // Private Helper & API Methods
   // ==========================================
 
-  /**
-   * Universal HTTP fetch helper for Google Drive API.
-   */
   async _apiFetch(url, options = {}) {
     if (!this._accessToken) {
       throw new Error('Not authenticated with Google Drive');
