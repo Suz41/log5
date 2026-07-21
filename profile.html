@@ -12,6 +12,7 @@
 <link rel="stylesheet" href="css/modal.css?v=12">
 <link rel="stylesheet" href="css/desktop.css?v=12">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
 
@@ -143,6 +144,16 @@
         <div class="contentBlock">
           <h3 class="blockTitle">DATA</h3>
           <div class="settingsList">
+            <button class="settingsItem" id="driveBackupBtn">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+              <span>Backup to Drive</span>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+            <button class="settingsItem" id="driveRestoreBtn">
+              <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Restore from Drive</span>
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
             <button class="settingsItem" id="importBtn">
               <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               <span>Import Movies</span>
@@ -251,6 +262,7 @@
 <script src="js/export.js"></script>
 <script src="js/overlays.js"></script>
 <script src="js/posterPicker.js"></script>
+<script src="js/drive.js"></script>
 <script src="js/profile.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {

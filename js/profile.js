@@ -401,6 +401,43 @@ Logit.ProfilePage = {
       if ($('profileName')) $('profileName').textContent = newName;
     });
 
+    // Google Drive Backup/Restore
+    if ($('driveBackupBtn')) $('driveBackupBtn').addEventListener('click', async function() {
+      var btn = $('driveBackupBtn');
+      btn.disabled = true;
+      btn.querySelector('span').textContent = 'Connecting...';
+      try {
+        Logit.Drive.init();
+        await new Promise(function(resolve) { Logit.Drive.requestAuth(resolve); });
+        btn.querySelector('span').textContent = 'Backing up...';
+        var result = await Logit.Drive.backup();
+        alert(result.message);
+      } catch (e) {
+        alert('Backup failed: ' + e.message);
+      }
+      btn.disabled = false;
+      btn.querySelector('span').textContent = 'Backup to Drive';
+    });
+
+    if ($('driveRestoreBtn')) $('driveRestoreBtn').addEventListener('click', async function() {
+      if (!confirm('Restore will add movies from your Google Drive backup. Continue?')) return;
+      var btn = $('driveRestoreBtn');
+      btn.disabled = true;
+      btn.querySelector('span').textContent = 'Connecting...';
+      try {
+        Logit.Drive.init();
+        await new Promise(function(resolve) { Logit.Drive.requestAuth(resolve); });
+        btn.querySelector('span').textContent = 'Restoring...';
+        var result = await Logit.Drive.restore();
+        alert(result.message);
+        if (result.success) location.reload();
+      } catch (e) {
+        alert('Restore failed: ' + e.message);
+      }
+      btn.disabled = false;
+      btn.querySelector('span').textContent = 'Restore from Drive';
+    });
+
     // Import / Export
     if ($('exportBtn')) $('exportBtn').addEventListener('click', function() { Logit.Utils.openModal($('exportModal')); });
     if ($('exportJsonBtn')) $('exportJsonBtn').addEventListener('click', async function() {
