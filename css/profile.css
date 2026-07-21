@@ -919,101 +919,110 @@
 }
 
 /* ========= GOOGLE DRIVE STATUS ROW ========= */
-.driveAccountRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  background: rgba(255, 255, 255, 0.02);
-  border-bottom: 0.5px solid var(--border);
+.settingsItem.driveAccountRow {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  padding: 12px 16px !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  cursor: default !important;
 }
 
-.driveAccountRow > svg {
-  color: var(--muted);
-  flex-shrink: 0;
+.settingsItem.driveAccountRow > svg {
+  color: var(--muted) !important;
+  flex-shrink: 0 !important;
 }
 
 .driveAccountDetails {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+  flex: 1 !important;
+  min-width: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  text-align: left !important;
 }
 
 .driveAccountHeader {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
 }
 
 .driveAccountName {
-  font-weight: 500;
-  font-size: 14px;
-  color: var(--text);
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  color: var(--text) !important;
 }
 
 .driveAccountEmail {
-  font-size: 11px;
-  color: var(--muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 11px !important;
+  color: var(--muted) !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
 }
 
 .driveStatusBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 2px 8px;
-  border-radius: 12px;
-  font-size: 10px;
-  font-weight: 500;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  padding: 2px 8px !important;
+  border-radius: 12px !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
 }
 
 .driveStatusBadge.connected {
-  background: rgba(46, 204, 113, 0.15);
-  color: #2ecc71;
+  background: rgba(46, 204, 113, 0.15) !important;
+  color: #2ecc71 !important;
+  border: 0.5px solid rgba(46, 204, 113, 0.3) !important;
 }
 
 .driveStatusBadge.disconnected {
-  background: rgba(231, 76, 60, 0.15);
-  color: #e74c3c;
+  background: rgba(231, 76, 60, 0.15) !important;
+  color: #e74c3c !important;
+  border: 0.5px solid rgba(231, 76, 60, 0.3) !important;
 }
 
 .statusDot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: currentColor;
+  width: 5px !important;
+  height: 5px !important;
+  border-radius: 50% !important;
+  background: currentColor !important;
+  display: inline-block !important;
 }
 
 .driveConnectBtn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 0.5px solid var(--border);
-  color: var(--text);
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 0.5px solid var(--border) !important;
+  color: var(--text) !important;
+  padding: 5px 12px !important;
+  border-radius: 6px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s !important;
+  flex-shrink: 0 !important;
+  outline: none !important;
 }
 
 .driveConnectBtn:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
 }
 
 .driveConnectBtn.connected {
-  background: rgba(231, 76, 60, 0.12);
-  color: #e74c3c;
-  border-color: rgba(231, 76, 60, 0.3);
+  background: rgba(231, 76, 60, 0.12) !important;
+  color: #e74c3c !important;
+  border-color: rgba(231, 76, 60, 0.3) !important;
 }
 
 .driveConnectBtn.connected:hover {
-  background: rgba(231, 76, 60, 0.2);
+  background: rgba(231, 76, 60, 0.22) !important;
 }
+
 
 
