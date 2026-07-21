@@ -65,21 +65,26 @@ Logit.Drive = {
       var content = JSON.stringify(backupData, null, 2);
       var blob = new Blob([content], { type: 'application/json' });
 
+      // Generate dynamic filename: logit-146-movies-2026-07-20.json
+      var now = new Date();
+      var dateStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+      var fileName = 'logit-' + movies.length + '-movies-' + dateStr + '.json';
+
       // Ensure Logit folder exists
       var folderId = await this._getOrCreateFolder();
 
       // Check if backup file already exists in folder
-      var existingFileId = await this._findFileInFolder(this._FILE_NAME, folderId);
+      var existingFileId = await this._findFileInFolder(fileName, folderId);
 
       if (existingFileId) {
         // Update existing file
         await this._updateFile(existingFileId, blob);
       } else {
         // Create new file in Logit folder
-        await this._createFileInFolder(this._FILE_NAME, blob, folderId);
+        await this._createFileInFolder(fileName, blob, folderId);
       }
 
-      return { success: true, message: 'Backup saved to Logit folder on Google Drive' };
+      return { success: true, message: 'Backup saved: ' + fileName };
     } catch (e) {
       console.error('Backup failed:', e);
       return { success: false, message: 'Backup failed: ' + e.message };
@@ -97,10 +102,24 @@ Logit.Drive = {
 
     try {
       var folderId = await this._getOrCreateFolder();
-      var fileId = await this._findFileInFolder(this._FILE_NAME, folderId);
-      if (!fileId) {
+
+      // Find latest backup file in Logit folder
+      var response = await fetch(
+        'https://www.googleapis.com/drive/v3/files?q=' +
+        encodeURIComponent("'" + folderId + "' in parents and name contains 'logit-' and name contains '-movies-' and trashed=false") +
+        '&fields=files(id,name,modifiedTime)&orderBy=modifiedTime desc',
+        {
+          headers: { Authorization: 'Bearer ' + this._accessToken }
+        }
+      );
+
+      var data = await response.json();
+      if (!data.files || data.files.length === 0) {
         return { success: false, message: 'No backup found in Logit folder on Google Drive' };
       }
+
+      var latestFile = data.files[0];
+      var fileId = latestFile.id;
 
       var content = await this._downloadFile(fileId);
       var backupData = JSON.parse(content);
