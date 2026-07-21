@@ -8,16 +8,22 @@ Logit.Drive = {
   _tokenClient: null,
   _accessToken: null,
   _FILE_NAME: 'logit-movies-backup.json',
+  _TOKEN_KEY: 'logit_drive_token',
 
   /**
    * Initialize Google Identity Services
    */
   init() {
+    // Restore saved token
+    var saved = localStorage.getItem(this._TOKEN_KEY);
+    if (saved) this._accessToken = saved;
+
     this._tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: '526761149863-6hd6eg1mqjnj41ajtesr2k8g7ch70ail.apps.googleusercontent.com',
       scope: 'https://www.googleapis.com/auth/drive.file',
       callback: (response) => {
         this._accessToken = response.access_token;
+        localStorage.setItem(this._TOKEN_KEY, response.access_token);
         this._onAuthSuccess();
       },
     });
@@ -208,6 +214,7 @@ Logit.Drive = {
     if (this._accessToken) {
       google.accounts.oauth2.revoke(this._accessToken);
       this._accessToken = null;
+      localStorage.removeItem(this._TOKEN_KEY);
     }
   }
 };

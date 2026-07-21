@@ -31,6 +31,10 @@ Logit.ProfilePage = {
       await this.loadFavoritesFromCloud();
       this.loadFavorites();
       this.updateStorageInfo();
+      // Initialize Google Drive for auto-backup
+      if (typeof google !== 'undefined' && google.accounts) {
+        Logit.Drive.init();
+      }
     } catch (e) { console.error('Profile init error:', e); }
   },
 

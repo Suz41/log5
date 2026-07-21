@@ -5,6 +5,8 @@ window.Logit = window.Logit || {};
  * All reads/writes go to the cloud. Requires authentication.
  */
 Logit.Storage = {
+  _autoBackupTimer: null,
+
   /** @param {number} bytes @returns {{ val: string, unit: string }} */
   formatBytes(bytes) {
     if (bytes < 1024) return { val: bytes, unit: 'B' };
@@ -65,6 +67,7 @@ Logit.Storage = {
       if (updErr) throw new Error(updErr.message);
     }
 
+    this._scheduleAutoBackup();
     return record;
   },
 
@@ -81,6 +84,20 @@ Logit.Storage = {
     var { error } = await client.from('movies').delete()
       .eq('id', movieId).eq('user_id', userId);
     if (error) throw new Error(error.message);
+
+    this._scheduleAutoBackup();
+  },
+
+  /**
+   * Schedule auto-backup to Google Drive (debounced)
+   */
+  _scheduleAutoBackup() {
+    if (this._autoBackupTimer) clearTimeout(this._autoBackupTimer);
+    this._autoBackupTimer = setTimeout(async function() {
+      if (Logit.Drive && Logit.Drive._accessToken) {
+        await Logit.Drive.backup();
+      }
+    }, 5000);
   },
 
   /**
