@@ -40,10 +40,9 @@ Logit.Drive = {
    */
   requestAuth(onSuccess) {
     this._onAuthSuccess = onSuccess || function() {};
-    if (this._accessToken) {
-      this._onAuthSuccess();
-      return;
-    }
+    // Always prompt for fresh token (previous may be expired)
+    this._accessToken = null;
+    localStorage.removeItem(this._TOKEN_KEY);
     this._tokenClient.requestAccessToken();
   },
 
@@ -60,7 +59,8 @@ Logit.Drive = {
       }
       xhr.onload = function() {
         if (xhr.status === 401) {
-          // Token expired - clear it
+          // Token expired - clear everywhere
+          Logit.Drive._accessToken = null;
           localStorage.removeItem('logit_drive_token');
           reject(new Error('Token expired. Please click Backup to Drive again.'));
           return;
@@ -98,6 +98,7 @@ Logit.Drive = {
       xhr.setRequestHeader('Authorization', 'Bearer ' + this._accessToken);
       xhr.onload = function() {
         if (xhr.status === 401) {
+          Logit.Drive._accessToken = null;
           localStorage.removeItem('logit_drive_token');
           reject(new Error('Token expired. Please click Backup to Drive again.'));
           return;
