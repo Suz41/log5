@@ -152,24 +152,32 @@ Logit.Drive = {
 
   async _getOrCreateFolder() {
     var cached = localStorage.getItem(this._FOLDER_KEY);
-    if (cached) return cached;
+    if (cached) {
+      console.log('Using cached folder ID:', cached);
+      return cached;
+    }
 
+    console.log('Listing all files to find Logit folder...');
     var data = await this._apiCall('GET', 'https://www.googleapis.com/drive/v3/files?spaces=drive&fields=files(id,name,mimeType)');
+    console.log('All files:', data.files);
 
     if (data.files) {
       var folder = data.files.find(function(f) {
         return f.name === 'Logit' && f.mimeType === 'application/vnd.google-apps.folder';
       });
       if (folder) {
+        console.log('Found existing Logit folder:', folder.id);
         localStorage.setItem(this._FOLDER_KEY, folder.id);
         return folder.id;
       }
     }
 
+    console.log('Creating new Logit folder...');
     var newFolder = await this._apiCall('POST', 'https://www.googleapis.com/drive/v3/files', {
       name: 'Logit',
       mimeType: 'application/vnd.google-apps.folder'
     });
+    console.log('Created folder:', newFolder);
 
     localStorage.setItem(this._FOLDER_KEY, newFolder.id);
     return newFolder.id;
@@ -196,7 +204,8 @@ Logit.Drive = {
 
   async _uploadFile(name, blob, folderId) {
     return new Promise(function(resolve, reject) {
-      var metadata = { name: name, parents: [folderId], mimeType: 'application/json' };
+      var metadata = { name: name, parents: [folderId] };
+
       var form = new FormData();
       form.append('metadata', new Blob([JSON.stringify(metadata)], { type: 'application/json' }));
       form.append('file', blob);
@@ -214,6 +223,7 @@ Logit.Drive = {
         if (xhr.status >= 200 && xhr.status < 300) {
           resolve(JSON.parse(xhr.responseText));
         } else {
+          console.error('Upload error:', xhr.status, xhr.responseText);
           reject(new Error('Upload failed: ' + xhr.status));
         }
       };
