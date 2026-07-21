@@ -473,33 +473,40 @@ Logit.ProfilePage = {
 
     if ($('driveBackupBtn')) $('driveBackupBtn').addEventListener('click', async function() {
       var btn = $('driveBackupBtn');
+      var titleEl = btn.querySelector('.driveActionTitle') || btn.querySelector('span');
+      var subEl = btn.querySelector('.driveActionSub');
       btn.disabled = true;
-      btn.querySelector('span').textContent = 'Connecting...';
+      if (titleEl) titleEl.textContent = 'Connecting...';
       try {
         Logit.Drive.init();
         await new Promise(function(resolve, reject) { Logit.Drive.requestAuth(resolve, reject); });
         await updateDriveStatusUI();
-        btn.querySelector('span').textContent = 'Backing up...';
+        if (titleEl) titleEl.textContent = 'Backing up...';
+        if (subEl) subEl.textContent = 'Uploading to Google Drive...';
         var result = await Logit.Drive.backup();
         alert(result.message);
       } catch (e) {
         alert('Backup failed: ' + e.message);
       }
       btn.disabled = false;
-      btn.querySelector('span').textContent = 'Backup to Drive';
+      if (titleEl) titleEl.textContent = 'Backup to Drive';
+      if (subEl) subEl.textContent = 'Save movies & settings';
       await updateDriveStatusUI();
     });
 
     if ($('driveRestoreBtn')) $('driveRestoreBtn').addEventListener('click', async function() {
       if (!confirm('Restore will add movies from your Google Drive backup. Continue?')) return;
       var btn = $('driveRestoreBtn');
+      var titleEl = btn.querySelector('.driveActionTitle') || btn.querySelector('span');
+      var subEl = btn.querySelector('.driveActionSub');
       btn.disabled = true;
-      btn.querySelector('span').textContent = 'Connecting...';
+      if (titleEl) titleEl.textContent = 'Connecting...';
       try {
         Logit.Drive.init();
         await new Promise(function(resolve, reject) { Logit.Drive.requestAuth(resolve, reject); });
         await updateDriveStatusUI();
-        btn.querySelector('span').textContent = 'Restoring...';
+        if (titleEl) titleEl.textContent = 'Restoring...';
+        if (subEl) subEl.textContent = 'Downloading cloud backup...';
         var result = await Logit.Drive.restore();
         alert(result.message);
         if (result.success) location.reload();
@@ -507,7 +514,8 @@ Logit.ProfilePage = {
         alert('Restore failed: ' + e.message);
       }
       btn.disabled = false;
-      btn.querySelector('span').textContent = 'Restore from Drive';
+      if (titleEl) titleEl.textContent = 'Restore from Drive';
+      if (subEl) subEl.textContent = 'Load latest cloud backup';
       await updateDriveStatusUI();
     });
 

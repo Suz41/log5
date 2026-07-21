@@ -918,111 +918,254 @@
   }
 }
 
-/* ========= GOOGLE DRIVE STATUS ROW ========= */
-.settingsItem.driveAccountRow {
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 12px !important;
-  padding: 12px 16px !important;
-  background: rgba(255, 255, 255, 0.02) !important;
-  cursor: default !important;
+/* ========= PREMIUM GOOGLE DRIVE CLOUD CARD ========= */
+.driveCloudCard {
+  position: relative;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.015) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(12px);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
-.settingsItem.driveAccountRow > svg {
-  color: var(--muted) !important;
-  flex-shrink: 0 !important;
+.driveCloudCard:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
 }
 
-.driveAccountDetails {
-  flex: 1 !important;
-  min-width: 0 !important;
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 3px !important;
-  text-align: left !important;
+.driveCloudHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
 }
 
-.driveAccountHeader {
-  display: flex !important;
-  align-items: center !important;
-  gap: 8px !important;
-  flex-wrap: wrap !important;
+.driveCloudIcon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(66, 133, 244, 0.2), rgba(52, 168, 83, 0.2));
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #4285f4;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 12px rgba(66, 133, 244, 0.15);
 }
 
-.driveAccountName {
-  font-weight: 500 !important;
-  font-size: 14px !important;
-  color: var(--text) !important;
+.driveCloudTitleWrap {
+  flex: 1;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.driveAccountEmail {
-  font-size: 11px !important;
-  color: var(--muted) !important;
-  white-space: nowrap !important;
-  overflow: hidden !important;
-  text-overflow: ellipsis !important;
+.driveCloudTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.driveCloudTitle {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--text);
+  letter-spacing: -0.2px;
+}
+
+.driveCloudEmail {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 240px;
 }
 
 .driveStatusBadge {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 5px !important;
-  padding: 2px 8px !important;
-  border-radius: 12px !important;
-  font-size: 10px !important;
-  font-weight: 500 !important;
-  line-height: 1.2 !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  transition: all 0.3s ease;
 }
 
 .driveStatusBadge.connected {
-  background: rgba(46, 204, 113, 0.15) !important;
-  color: #2ecc71 !important;
-  border: 0.5px solid rgba(46, 204, 113, 0.3) !important;
+  background: rgba(46, 204, 113, 0.15);
+  color: #2ecc71;
+  border: 1px solid rgba(46, 204, 113, 0.35);
+  box-shadow: 0 0 10px rgba(46, 204, 113, 0.15);
 }
 
 .driveStatusBadge.disconnected {
-  background: rgba(231, 76, 60, 0.15) !important;
-  color: #e74c3c !important;
-  border: 0.5px solid rgba(231, 76, 60, 0.3) !important;
+  background: rgba(231, 76, 60, 0.15);
+  color: #e74c3c;
+  border: 1px solid rgba(231, 76, 60, 0.35);
 }
 
 .statusDot {
-  width: 5px !important;
-  height: 5px !important;
-  border-radius: 50% !important;
-  background: currentColor !important;
-  display: inline-block !important;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  display: inline-block;
+}
+
+.driveStatusBadge.connected .statusDot {
+  animation: pulseDot 2s infinite;
+}
+
+@keyframes pulseDot {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 6px rgba(46, 204, 113, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
 }
 
 .driveConnectBtn {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 0.5px solid var(--border) !important;
-  color: var(--text) !important;
-  padding: 5px 12px !important;
-  border-radius: 6px !important;
-  font-size: 11px !important;
-  font-weight: 500 !important;
-  cursor: pointer !important;
-  transition: all 0.2s !important;
-  flex-shrink: 0 !important;
-  outline: none !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--text);
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  flex-shrink: 0;
+  outline: none;
 }
 
 .driveConnectBtn:hover {
-  background: rgba(255, 255, 255, 0.15) !important;
-  border-color: rgba(255, 255, 255, 0.25) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.1));
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
 }
 
 .driveConnectBtn.connected {
-  background: rgba(231, 76, 60, 0.12) !important;
-  color: #e74c3c !important;
-  border-color: rgba(231, 76, 60, 0.3) !important;
+  background: rgba(231, 76, 60, 0.12);
+  color: #e74c3c;
+  border-color: rgba(231, 76, 60, 0.35);
 }
 
 .driveConnectBtn.connected:hover {
-  background: rgba(231, 76, 60, 0.22) !important;
+  background: rgba(231, 76, 60, 0.22);
+  border-color: rgba(231, 76, 60, 0.5);
 }
+
+.driveCloudStats {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.driveStatItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.driveStatLabel {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.driveStatValue {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* ========= ACTION GRID FOR BACKUP / RESTORE ========= */
+.driveActionGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 500px) {
+  .driveActionGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.driveActionBtn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-align: left;
+}
+
+.driveActionBtn:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+}
+
+.driveActionIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.driveActionBtn:hover .driveActionIcon {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.driveActionText {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.driveActionTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.driveActionSub {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 
 
 
