@@ -239,31 +239,25 @@ body.hide-dates .movieDate {
 }
 
 .movie.hasMissing {
-  outline: 2px solid var(--red);
-  outline-offset: -2px;
+  border: 2px solid var(--red);
+  border-radius: 4px;
 }
 
 .movie.hasMissing::after {
   content: 'Missing metadata';
   position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(255, 69, 58, 0.95);
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 69, 58, 0.9);
   color: #fff;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 10px;
+  padding: 3px 6px;
+  border-radius: 0 0 4px 4px;
+  font-size: 9px;
   font-weight: 600;
-  white-space: nowrap;
+  text-align: center;
   pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.2s;
   z-index: 10;
-}
-
-.movie.hasMissing:hover::after {
-  opacity: 1;
 }
 
 .monthMissingDot {
