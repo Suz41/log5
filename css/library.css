@@ -228,20 +228,51 @@ body.hide-dates .movieDate {
 /* ========= MISSING METADATA INDICATORS ========= */
 .missingDot {
   display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--red);
-  margin-left: 6px;
-  vertical-align: middle;
-}
-
-.monthMissingDot {
-  display: inline-block;
   width: 8px;
   height: 8px;
   border-radius: 50%;
   background: var(--red);
+  margin-left: 6px;
+  vertical-align: middle;
+  box-shadow: 0 0 4px var(--red);
+}
+
+.movie:has(.missingDot) {
+  outline: 2px solid var(--red);
+  outline-offset: -2px;
+  position: relative;
+}
+
+.movie:has(.missingDot)::after {
+  content: 'Missing metadata';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 69, 58, 0.95);
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 10;
+}
+
+.movie:has(.missingDot):hover::after {
+  opacity: 1;
+}
+
+.monthMissingDot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--red);
   margin-left: 8px;
   vertical-align: middle;
+  box-shadow: 0 0 6px var(--red);
 }
