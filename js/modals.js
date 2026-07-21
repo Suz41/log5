@@ -1,11 +1,9 @@
 window.Logit = window.Logit || {};
 
 Logit.Modals = {
-  _posterFallback: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" fill="%231a1a1a"><rect width="200" height="300"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23555" font-family="sans-serif" font-size="14">No Poster</text></svg>'),
-
   _handleImgError(e) {
     e.target.onerror = null;
-    e.target.src = Logit.Modals._posterFallback;
+    e.target.src = Logit.POSTER_FALLBACK;
   },
 
   openRating(movie, apiKey, onAdd) {
@@ -18,13 +16,13 @@ Logit.Modals = {
     sheet.setAttribute('aria-label', 'Rate movie');
 
     var ratesHtml = '';
-    [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].forEach(function(v) {
+    Logit.RATINGS.forEach(function(v) {
       ratesHtml += '<button aria-label="Rate ' + v + ' stars">' + v + '</button>';
     });
 
     sheet.innerHTML = '<div class="sheetBg" aria-hidden="true"></div>'
       + '<div class="sheet">'
-      + '<img src="' + Logit.Utils.esc(Logit.Utils.img(movie.poster_path)) + '" onerror="this.onerror=null;this.src=\'' + Logit.Modals._posterFallback + '\'" alt="' + Logit.Utils.esc(movie.title) + ' poster">'
+      + '<img src="' + Logit.Utils.esc(Logit.Utils.img(movie.poster_path)) + '" onerror="this.onerror=null;this.src=\'' + Logit.POSTER_FALLBACK + '\'" alt="' + Logit.Utils.esc(movie.title) + ' poster">'
       + '<h3>' + Logit.Utils.esc(movie.title) + '</h3>'
       + '<div class="rates">' + ratesHtml + '</div>'
       + '<label class="sheetToggle">'

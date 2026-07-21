@@ -73,7 +73,7 @@ Logit.StatUtils = {
       }
 
       /* DECADES */
-      const yr = parseInt(movie.yr);
+      const yr = parseInt(movie.yr, 10);
       if (yr && !isNaN(yr)) {
         const decade = Math.floor(yr / 10) * 10 + 's';
         data.decadeCount[decade] = (data.decadeCount[decade] || 0) + 1;

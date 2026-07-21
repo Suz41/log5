@@ -41,7 +41,7 @@ Logit.LibraryPage = {
 
     function handleImgError(e) {
       e.target.onerror = null;
-      e.target.src = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" fill="%231a1a1a"><rect width="200" height="300"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23555" font-family="sans-serif" font-size="14">No Poster</text></svg>');
+      e.target.src = Logit.POSTER_FALLBACK;
     }
 
     function buildMovieCard(movie) {
@@ -51,7 +51,7 @@ Logit.LibraryPage = {
       var card = document.createElement('div');
       card.className = 'movie';
       card.dataset.id = movie.id;
-      card.innerHTML = '<img src="' + esc(img(movie.sp)) + '" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'' + 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" fill="%231a1a1a"><rect width="200" height="300"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23555" font-family="sans-serif" font-size="14">No Poster</text></svg>') + '\'">'
+      card.innerHTML = '<img src="' + esc(img(movie.sp)) + '" loading="lazy" decoding="async" onerror="this.onerror=null;this.src=\'' + Logit.POSTER_FALLBACK + '\'">'
         + '<div class="movieDate"><span class="day">' + formatted.day + '</span> ' + formatted.month + rewatchBadge + '</div>';
       return card;
     }
@@ -81,14 +81,20 @@ Logit.LibraryPage = {
       var grouped = {};
       sorted.forEach(function(movie) {
         var date = new Date(movie.d);
-        var monthKey = date.getFullYear() + '-' + date.getMonth();
+        var year = date.getFullYear();
+        var month = date.getMonth();
+        var monthKey = year + '-' + month;
         if (!grouped[monthKey]) {
-          grouped[monthKey] = { label: date.toLocaleString('default', { month: 'long' }), movies: [] };
+          grouped[monthKey] = { label: date.toLocaleString('default', { month: 'long' }) + ' ' + year, movies: [] };
         }
         grouped[monthKey].movies.push(movie);
       });
 
-      var keys = Object.keys(grouped).sort(function(a, b) { return new Date(b) - new Date(a); });
+      var keys = Object.keys(grouped).sort(function(a, b) {
+        var partsA = a.split('-');
+        var partsB = b.split('-');
+        return (parseInt(partsB[0]) * 12 + parseInt(partsB[1])) - (parseInt(partsA[0]) * 12 + parseInt(partsA[1]));
+      });
 
       if (state.openMonths.size === 0 && keys.length > 0) {
         state.openMonths.add(keys[0]);
@@ -182,7 +188,6 @@ Logit.LibraryPage = {
       localStorage.setItem('logit_grid_count', gridCount);
     }
     if (gridSlider) gridSlider.oninput = function() { setGridValue(this.value); };
-    if (sidebarGridSlider) sidebarGridSlider.oninput = function() { setGridValue(this.value); };
     setGridValue(gridCount);
 
     // ========= DATE TOGGLE =========
@@ -354,7 +359,7 @@ Logit.LibraryPage = {
     function buildRatingEdit(currentRating) {
       var container = $('eRating');
       container.innerHTML = '';
-      [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].forEach(function(v) {
+      Logit.RATINGS.forEach(function(v) {
         var btn = document.createElement('button');
         btn.textContent = v;
         if (String(v) === String(currentRating)) btn.classList.add('active');

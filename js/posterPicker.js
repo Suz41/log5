@@ -1,8 +1,6 @@
 window.Logit = window.Logit || {};
 
 Logit.PosterPicker = {
-  _fallback: 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="200" height="300" fill="%231a1a1a"><rect width="200" height="300"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23555" font-family="sans-serif" font-size="14">No Poster</text></svg>'),
-
   /** @param {Object} movie @param {string} apiKey @param {Function} onSelect */
   async open(movie, apiKey, onSelect) {
     var old = document.querySelector('.posterPicker');
@@ -48,7 +46,7 @@ Logit.PosterPicker = {
       var imgEl = document.createElement('img');
       imgEl.src = Logit.Utils.esc(Logit.Utils.img(p.u, 'w342'));
       imgEl.loading = 'lazy';
-      imgEl.onerror = function() { this.onerror = null; this.src = Logit.PosterPicker._fallback; };
+      imgEl.onerror = function() { this.onerror = null; this.src = Logit.POSTER_FALLBACK; };
 
       var langEl = document.createElement('div');
       langEl.className = 'posterLang';

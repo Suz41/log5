@@ -3,6 +3,17 @@ window.Logit = window.Logit || {};
 Logit.ProfilePage = {
   _user: null,
   _movies: [],
+  _favorites: [],
+
+  _setAvatar(url) {
+    var avatarEl = document.getElementById('profileAvatar');
+    if (!avatarEl) return;
+    avatarEl.textContent = '';
+    var img = document.createElement('img');
+    img.src = url;
+    img.style.cssText = 'width:100%;height:100%;border-radius:50%;object-fit:cover;';
+    avatarEl.appendChild(img);
+  },
 
   async init() {
     try {
@@ -297,11 +308,7 @@ Logit.ProfilePage = {
       var { data, error } = await client.from('settings').select('avatar').eq('user_id', userId).single();
       if (error) { console.warn('Avatar load error:', error.message); return; }
       if (data && data.avatar) {
-        var avatarEl = document.getElementById('profileAvatar');
-        if (avatarEl) {
-          avatarEl.textContent = '';
-          avatarEl.innerHTML = '<img src="' + data.avatar + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">';
-        }
+        self._setAvatar(data.avatar);
       }
     } catch (e) { console.warn('Avatar load failed:', e); }
   },
@@ -345,10 +352,13 @@ Logit.ProfilePage = {
     if ($('clearAvatarBtn')) $('clearAvatarBtn').addEventListener('click', function() {
       if (!confirm('Remove avatar?')) return;
       self.clearAvatarFromCloud();
-      var avatarEl = $('profileAvatar');
       var user = self._user;
       var username = user && user.user_metadata && user.user_metadata.username || 'User';
-      if (avatarEl) avatarEl.textContent = username[0].toUpperCase();
+      var avatarEl = $('profileAvatar');
+      if (avatarEl) {
+        avatarEl.textContent = '';
+        avatarEl.textContent = username[0].toUpperCase();
+      }
     });
 
     if ($('avatarInput')) $('avatarInput').addEventListener('change', function(e) {
@@ -368,8 +378,7 @@ Logit.ProfilePage = {
           var y = (size - img.height * scale) / 2;
           ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
           var compressed = canvas.toDataURL('image/jpeg', 0.7);
-          var avatarEl = $('profileAvatar');
-          if (avatarEl) avatarEl.innerHTML = '<img src="' + compressed + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">';
+          self._setAvatar(compressed);
           self.syncAvatarToCloud(compressed);
         };
         img.src = ev.target.result;
@@ -631,8 +640,7 @@ Logit.ProfilePage = {
   },
 
   async setDirectorAvatar(imgUrl) {
-    var avatarEl = document.getElementById('profileAvatar');
-    if (avatarEl) avatarEl.innerHTML = '<img src="' + imgUrl + '" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">';
+    this._setAvatar(imgUrl);
     await this.syncAvatarToCloud(imgUrl);
     this.closeDirectorModal();
   },
