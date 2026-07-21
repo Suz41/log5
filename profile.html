@@ -6,11 +6,11 @@
 <title>Profile - Log!t</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/main.css?v=16">
-<link rel="stylesheet" href="css/components.css?v=16">
-<link rel="stylesheet" href="css/profile.css?v=16">
-<link rel="stylesheet" href="css/modal.css?v=16">
-<link rel="stylesheet" href="css/desktop.css?v=16">
+<link rel="stylesheet" href="css/main.css?v=17">
+<link rel="stylesheet" href="css/components.css?v=17">
+<link rel="stylesheet" href="css/profile.css?v=17">
+<link rel="stylesheet" href="css/modal.css?v=17">
+<link rel="stylesheet" href="css/desktop.css?v=17">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
@@ -126,6 +126,8 @@
     <!-- Settings Tab -->
     <div class="tabPanel" id="panel-settings">
       <div class="settingsSection">
+        
+        <!-- 1. ACCOUNT -->
         <div class="contentBlock">
           <h3 class="blockTitle">ACCOUNT</h3>
           <div class="settingsList">
@@ -141,10 +143,10 @@
             </button>
           </div>
         </div>
+
+        <!-- 2. GOOGLE DRIVE -->
         <div class="contentBlock">
-          <h3 class="blockTitle">GOOGLE DRIVE BACKUP</h3>
-          
-          <!-- Minimal Cloud Drive Card -->
+          <h3 class="blockTitle">GOOGLE DRIVE</h3>
           <div class="driveCloudCard minimal" id="driveAccountCard">
             <div class="driveCloudHeaderTop">
               <div class="driveCloudIcon">
@@ -163,8 +165,11 @@
             </div>
             <button type="button" class="driveConnectBtn" id="driveConnectBtn">Connect</button>
           </div>
+        </div>
 
-          <!-- Minimal Action List -->
+        <!-- 3. BACKUP & DATA -->
+        <div class="contentBlock">
+          <h3 class="blockTitle">BACKUP & DATA</h3>
           <div class="settingsList">
             <button class="settingsItem" id="driveBackupBtn">
               <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
@@ -186,6 +191,13 @@
               <span>Export Movies</span>
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
+          </div>
+        </div>
+
+        <!-- 4. DANGER ZONE -->
+        <div class="contentBlock">
+          <h3 class="blockTitle">DANGER ZONE</h3>
+          <div class="settingsList">
             <button class="settingsItem danger" id="deleteAccountBtn">
               <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
               <span>Delete Account</span>
@@ -198,6 +210,7 @@
             </button>
           </div>
         </div>
+
       </div>
     </div>
 
