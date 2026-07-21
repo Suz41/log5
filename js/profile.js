@@ -41,13 +41,11 @@ Logit.ProfilePage = {
   loadProfile() {
     var user = this._user;
     var nameEl = document.getElementById('profileName');
-    var emailEl = document.getElementById('profileEmail');
     var avatarEl = document.getElementById('profileAvatar');
 
     if (user) {
       var username = user.user_metadata && user.user_metadata.username || (user.email || '').split('@')[0] || 'User';
       if (nameEl) nameEl.textContent = username;
-      if (emailEl) emailEl.textContent = user.email || '';
       // Only set initial letter if no avatar loaded yet
       if (avatarEl && !avatarEl.querySelector('img')) {
         avatarEl.textContent = username[0].toUpperCase();
@@ -59,14 +57,7 @@ Logit.ProfilePage = {
     try {
       var usage = await Logit.Storage.getCloudStorageUsage();
       var countEl = document.getElementById('moviesCount');
-      var usageEl = document.getElementById('localStorageUsage');
       if (countEl) countEl.textContent = usage.count;
-      if (usageEl) usageEl.textContent = usage.formatted + ' / 500 MB';
-
-      var cloudCountEl = document.getElementById('cloudMoviesCount');
-      var cloudUsageEl = document.getElementById('cloudStorageUsage');
-      if (cloudCountEl) cloudCountEl.textContent = usage.count;
-      if (cloudUsageEl) cloudUsageEl.textContent = usage.formatted + ' / 500 MB';
     } catch (e) {}
   },
 
@@ -559,10 +550,7 @@ Logit.ProfilePage = {
       location.reload();
     });
 
-    if ($('enableCloudBtn')) $('enableCloudBtn').addEventListener('click', function() { window.location.href = 'welcome.html'; });
-
     // Favorite movies
-    if ($('addFavBtn')) $('addFavBtn').addEventListener('click', function() { self.openFavModal(); });
     if ($('favModalClose')) $('favModalClose').addEventListener('click', function() { self.closeFavModal(); });
     if ($('favSearchInput')) $('favSearchInput').addEventListener('input', function(e) {
       clearTimeout(self._favSearchTimeout);

@@ -21,12 +21,6 @@ Logit.LibraryPage = {
       return;
     }
 
-    // Check authentication
-    if (Logit.Auth.isOfflineMode()) {
-      window.location.href = 'welcome.html';
-      return;
-    }
-
     var state = {
       movies: [],
       current: null,
@@ -177,17 +171,13 @@ Logit.LibraryPage = {
     var isPC = window.innerWidth >= 1024;
     var gridCount = parseInt(localStorage.getItem('logit_grid_count')) || (isPC ? 10 : 4);
     var gridSlider = $('gridSlider');
-    var sidebarGridSlider = $('sidebarGridSlider');
     var gridValue = $('gridValue');
-    var sidebarGridValue = $('sidebarGridValue');
     if (gridSlider) { gridSlider.min = isPC ? 10 : 4; gridSlider.max = isPC ? 20 : 10; gridSlider.value = gridCount; }
 
     function setGridValue(val) {
       gridCount = Math.round(Number(val));
       if (gridSlider) gridSlider.value = gridCount;
-      if (sidebarGridSlider) sidebarGridSlider.value = gridCount;
       if (gridValue) gridValue.textContent = gridCount;
-      if (sidebarGridValue) sidebarGridValue.textContent = gridCount;
       document.documentElement.style.setProperty('--grid', gridCount);
       localStorage.setItem('logit_grid_count', gridCount);
     }
@@ -198,15 +188,12 @@ Logit.LibraryPage = {
     // ========= DATE TOGGLE =========
     var showDates = localStorage.getItem('logit_show_dates') !== 'false';
     var dateToggle = $('dateToggle');
-    var sidebarDateToggle = $('sidebarDateToggle');
     function updateDateBtn() {
       document.body.classList.toggle('hide-dates', !showDates);
       if (dateToggle) dateToggle.classList.toggle('on', showDates);
-      if (sidebarDateToggle) sidebarDateToggle.classList.toggle('on', showDates);
     }
     function toggleDates() { showDates = !showDates; localStorage.setItem('logit_show_dates', showDates); updateDateBtn(); }
     if (dateToggle) dateToggle.onclick = toggleDates;
-    if (sidebarDateToggle) sidebarDateToggle.onclick = toggleDates;
     updateDateBtn();
 
     // ========= SEARCH =========
@@ -444,7 +431,5 @@ Logit.LibraryPage = {
     Logit.UI.setupAutoHideNav(document.querySelector('.bottomNav'));
     $('navLibrary').onclick = function() { window.scrollTo({ top: 0, behavior: 'smooth' }); };
     $('navStats').onclick = function() { window.location.href = 'PS.html'; };
-    var sidebarToggle = $('sidebarToggle');
-    if (sidebarToggle) sidebarToggle.onclick = function() { document.body.classList.toggle('collapsed'); };
   }
 };

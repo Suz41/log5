@@ -52,18 +52,6 @@ Logit.Supabase = {
   },
 
   /**
-   * Configure Supabase credentials
-   * @param {string} url - Supabase project URL
-   * @param {string} key - Supabase anon key
-   */
-  configure(url, key) {
-    localStorage.setItem('supabase_url', url.trim());
-    localStorage.setItem('supabase_anon_key', key.trim());
-    this._initialized = false;
-    return this.init();
-  },
-
-  /**
    * Get authenticated user
    * @returns {Promise<Object|null>}
    */

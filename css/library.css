@@ -189,64 +189,6 @@ body.hide-dates .movieDate {
   display: none;
 }
 
-/* ========= GLASS BADGES & OVERLAYS ========= */
-.moviePosterContainer {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 2/3;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-  background: var(--surface);
-  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.25s;
-}
-
-.moviePosterContainer img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  transition: transform 0.25s ease;
-}
-
-.movieRating {
-  position: absolute;
-  bottom: 8px;
-  left: 8px;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  padding: 3px 6px;
-  border-radius: 6px;
-  font-size: 10px;
-  font-weight: 700;
-  color: #ffb800;
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-  border: 0.5px solid rgba(255,255,255,0.08);
-}
-
-.movieRewatchBadge {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 20px;
-  height: 20px;
-  background: var(--pink);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-}
-
 /* ========= EMPTY STATE ========= */
 .empty {
   height: 65vh;

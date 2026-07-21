@@ -201,8 +201,6 @@ Logit.Auth = {
     } catch (e) { /* silent */ }
   },
 
-  isOfflineMode() { return false; },
-
   redirectToLibrary() {
     setTimeout(function() { window.location.href = 'index.html'; }, 300);
   }

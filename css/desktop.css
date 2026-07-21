@@ -159,15 +159,6 @@
     box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
   }
 
-  .moviePosterContainer:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
-  }
-
-  .moviePosterContainer:hover img {
-    transform: scale(1.04);
-  }
-
   .pcSearchBar {
     display: flex;
     align-items: center;
@@ -590,38 +581,6 @@
   .blockTitle {
     font-size: 13px;
     margin-bottom: 20px;
-  }
-
-  .filmGrid {
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
-  }
-
-  .filmPoster {
-    border-radius: 4px;
-  }
-
-  .filmPoster:hover {
-    transform: scale(1.08);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-  }
-
-  .genreTag {
-    padding: 8px 18px;
-    font-size: 13px;
-    border-radius: 24px;
-  }
-
-  .statsCard {
-    padding: 24px;
-  }
-
-  .statsNum {
-    font-size: 28px;
-  }
-
-  .storageCard {
-    padding: 20px;
   }
 
   .settingsList {
