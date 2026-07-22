@@ -19,6 +19,7 @@ All notable changes to Log!t will be documented in this file.
 - Reorganized profile settings into 4 clean, distinct sections: Account, Google Drive, Backup & Data, and Danger Zone
 - Cleaned up 100+ lines of unused legacy CSS layout rules from `css/profile.css`
 - Fixed mobile vertical spacing gaps and element alignment across settings content blocks
+- Redesigned the login/authentication interface with premium glassmorphic cards, ambient background grid overlays, and floating green/pink glows, strictly matched to the official system color palette
 
 ### Fixed
 - Fixed duplicate Google Drive backups by automatically finding, updating, and renaming any existing backup files to match the new count and date format (e.g. `logit-count-movies-date.json`), maintaining exactly one file in the folder
