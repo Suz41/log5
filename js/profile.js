@@ -644,36 +644,70 @@ Logit.ProfilePage = {
     };
 
     // Account
-    if ($('changePasswordBtn')) $('changePasswordBtn').addEventListener('click', async function() {
+    if ($('changePasswordBtn')) $('changePasswordBtn').addEventListener('click', function() {
+      Logit.Utils.openModal($('changePasswordModal'));
+      $('changeCurrentPassword').value = '';
+      $('changeNewPassword').value = '';
+      $('changePasswordStatus').textContent = '';
+      $('changeCurrentPassword').focus();
+    });
+
+    if ($('changePasswordModalClose')) $('changePasswordModalClose').addEventListener('click', function() {
+      Logit.Utils.closeModal($('changePasswordModal'));
+    });
+
+    if ($('modalChangePasswordStartBtn')) $('modalChangePasswordStartBtn').addEventListener('click', async function() {
+      var statusEl = $('changePasswordStatus');
+      var currentPass = $('changeCurrentPassword').value;
+      var newPass = $('changeNewPassword').value;
+
+      if (!currentPass) { statusEl.textContent = 'Please enter your current password.'; return; }
+      if (!newPass || newPass.length < 6) { statusEl.textContent = 'New password must be 6+ characters.'; return; }
+
+      statusEl.textContent = 'Updating...';
+      statusEl.style.color = 'var(--text)';
+
       var client = Logit.Supabase.getClient();
-      if (!client) { alert('Not connected'); return; }
+      if (!client) { statusEl.textContent = 'Database client not connected.'; statusEl.style.color = 'var(--red)'; return; }
+
       var user = await client.auth.getUser();
       var email = user.data && user.data.user && user.data.user.email;
-      if (!email) { alert('Not logged in'); return; }
-
-      var currentPass = prompt('Enter current password (or press Cancel if you forgot it):');
-      if (currentPass === null) {
-        if (confirm('Forgot your current password? We can send a password reset link to ' + email + '.')) {
-          var redirectUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/reset.html';
-          var { error } = await client.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl });
-          if (error) {
-            alert(error.message);
-          } else {
-            alert('Password reset link sent to your email! Please check your inbox.');
-          }
-        }
-        return;
-      }
-      if (!currentPass) { alert('Current password cannot be empty.'); return; }
-
-      var newPass = prompt('Enter new password (6+ characters):');
-      if (!newPass || newPass.length < 6) { alert('Password must be 6+ characters'); return; }
+      if (!email) { statusEl.textContent = 'No email found. Are you logged in?'; statusEl.style.color = 'var(--red)'; return; }
 
       var { error: loginError } = await client.auth.signInWithPassword({ email: email, password: currentPass });
-      if (loginError) { alert('Current password is wrong'); return; }
+      if (loginError) { statusEl.textContent = 'Current password is incorrect.'; statusEl.style.color = 'var(--red)'; return; }
+
       var { error } = await client.auth.updateUser({ password: newPass });
-      if (error) { alert(error.message); return; }
-      alert('Password updated successfully!');
+      if (error) { statusEl.textContent = error.message; statusEl.style.color = 'var(--red)'; return; }
+
+      statusEl.textContent = 'Password updated successfully!';
+      statusEl.style.color = 'var(--green)';
+      setTimeout(function() {
+        Logit.Utils.closeModal($('changePasswordModal'));
+      }, 1500);
+    });
+
+    if ($('modalForgotPasswordBtn')) $('modalForgotPasswordBtn').addEventListener('click', async function() {
+      var statusEl = $('changePasswordStatus');
+      statusEl.textContent = 'Sending password reset email...';
+      statusEl.style.color = 'var(--text)';
+
+      var client = Logit.Supabase.getClient();
+      if (!client) { statusEl.textContent = 'Database client not connected.'; statusEl.style.color = 'var(--red)'; return; }
+
+      var user = await client.auth.getUser();
+      var email = user.data && user.data.user && user.data.user.email;
+      if (!email) { statusEl.textContent = 'No email found. Are you logged in?'; statusEl.style.color = 'var(--red)'; return; }
+
+      var redirectUrl = window.location.origin + window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/')) + '/reset.html';
+      var { error } = await client.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl });
+      if (error) {
+        statusEl.textContent = error.message;
+        statusEl.style.color = 'var(--red)';
+      } else {
+        statusEl.textContent = 'Reset link sent! Please check your inbox.';
+        statusEl.style.color = 'var(--green)';
+      }
     });
 
     if ($('signOutBtn')) $('signOutBtn').addEventListener('click', function() {
