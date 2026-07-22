@@ -22,6 +22,8 @@ All notable changes to Log!t will be documented in this file.
 
 ### Fixed
 - Fixed duplicate Google Drive backups by automatically finding, updating, and renaming any existing backup files to match the new count and date format (e.g. `logit-count-movies-date.json`), maintaining exactly one file in the folder
+- Added version query parameters (`?v=30`) to all script imports in `profile.html` to prevent browser caching of legacy drive engines
+- Added detailed browser console diagnostics (`[Drive] Target backup filename`) to troubleshoot Google Drive API interactions in real time
 - Fixed OAuth token callback promise resolution timing before updating status UI
 - Fixed username text offset by removing inline element flex width skewing
 - Fixed mobile spacing collapse where `.contentBlock` margin was overridden to `0`
