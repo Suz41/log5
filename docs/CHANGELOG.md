@@ -12,6 +12,7 @@ All notable changes to Log!t will be documented in this file.
 - Detailed visual dark-mode software architecture flowchart diagram illustrating UI, Services, and Storage Sync layers
 - Custom Change Password modal overlay styled directly with system variables
 - Clickable "Forgot Password?" recovery link inside the Change Password dialog to trigger password reset links to user email
+- Password visibility toggle buttons (eye icon) added to both password inputs inside the Change Password modal overlay
 
 ### Changed
 - Complete rewrite of `Logit.Drive` integration using modern `fetch()` API and async/await
