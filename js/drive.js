@@ -210,9 +210,12 @@ Logit.Drive = {
       const folderId = await this._getOrCreateFolder();
       const existingFile = await this._findAndCleanBackupFiles(folderId);
 
+      console.log('[Drive] Target backup filename:', fileName);
       if (existingFile) {
+        console.log('[Drive] Found existing backup file to update & rename:', existingFile.name, '->', fileName);
         await this._updateAndRenameFile(existingFile.id, fileName, content);
       } else {
+        console.log('[Drive] No existing backup found. Creating new file:', fileName);
         await this._createFile(fileName, content, folderId);
       }
 
