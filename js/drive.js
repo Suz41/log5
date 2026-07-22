@@ -201,13 +201,17 @@ Logit.Drive = {
       };
 
       const content = JSON.stringify(backupData, null, 2);
-      const fileName = 'logit-backup.json';
+      const now = new Date();
+      const dateStr = now.getFullYear() + '-' +
+        String(now.getMonth() + 1).padStart(2, '0') + '-' +
+        String(now.getDate()).padStart(2, '0');
+      const fileName = `logit-${movies.length}-movies-${dateStr}.json`;
 
       const folderId = await this._getOrCreateFolder();
-      const existingFileId = await this._findFileByName(fileName, folderId);
+      const existingFile = await this._findAndCleanBackupFiles(folderId);
 
-      if (existingFileId) {
-        await this._updateFileContent(existingFileId, content);
+      if (existingFile) {
+        await this._updateAndRenameFile(existingFile.id, fileName, content);
       } else {
         await this._createFile(fileName, content, folderId);
       }
@@ -414,5 +418,55 @@ Logit.Drive = {
   async _downloadFileContent(fileId) {
     const res = await this._apiFetch(`https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`);
     return await res.text();
+  },
+
+  async _findAndCleanBackupFiles(folderId) {
+    const q = encodeURIComponent(`'${folderId}' in parents and mimeType != 'application/vnd.google-apps.folder' and trashed = false`);
+    const res = await this._apiFetch(`https://www.googleapis.com/drive/v3/files?q=${q}&fields=files(id,name,createdTime)`);
+    const data = await res.json();
+    if (!data.files) return null;
+
+    const backups = data.files.filter(f => f.name && (f.name.startsWith('logit-') && f.name.endsWith('.json')));
+    if (backups.length === 0) return null;
+
+    // Sort so the newest is first
+    backups.sort((a, b) => (b.createdTime || '').localeCompare(a.createdTime || ''));
+
+    // The first one is the one we will keep and update
+    const targetFile = backups[0];
+
+    // Delete any others to keep folder clean
+    for (let i = 1; i < backups.length; i++) {
+      try {
+        await this._deleteFile(backups[i].id);
+        console.log(`[Drive] Cleaned up legacy backup file: ${backups[i].name}`);
+      } catch (e) {
+        console.warn('[Drive] Failed to delete old backup file:', e);
+      }
+    }
+
+    return targetFile;
+  },
+
+  async _updateAndRenameFile(fileId, newName, contentText) {
+    // 1. Update metadata (rename)
+    await this._apiFetch(`https://www.googleapis.com/drive/v3/files/${fileId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+      body: JSON.stringify({ name: newName })
+    });
+
+    // 2. Update media content
+    await this._apiFetch(`https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json; charset=UTF-8' },
+      body: contentText
+    });
+  },
+
+  async _deleteFile(fileId) {
+    return await this._apiFetch(`https://www.googleapis.com/drive/v3/files/${fileId}`, {
+      method: 'DELETE'
+    });
   }
 };
