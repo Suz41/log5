@@ -648,9 +648,30 @@ Logit.ProfilePage = {
       Logit.Utils.openModal($('changePasswordModal'));
       $('changeCurrentPassword').value = '';
       $('changeNewPassword').value = '';
+      $('changeCurrentPassword').type = 'password';
+      $('changeNewPassword').type = 'password';
+      $('toggleCurrentPasswordBtn').innerHTML = '&#128065;';
+      $('toggleNewPasswordBtn').innerHTML = '&#128065;';
       $('changePasswordStatus').textContent = '';
       $('changeCurrentPassword').focus();
     });
+
+    function setupPasswordToggle(inputId, toggleId) {
+      var input = $(inputId);
+      var toggle = $(toggleId);
+      if (!input || !toggle) return;
+      toggle.addEventListener('click', function() {
+        if (input.type === 'password') {
+          input.type = 'text';
+          toggle.innerHTML = '&#128064;';
+        } else {
+          input.type = 'password';
+          toggle.innerHTML = '&#128065;';
+        }
+      });
+    }
+    setupPasswordToggle('changeCurrentPassword', 'toggleCurrentPasswordBtn');
+    setupPasswordToggle('changeNewPassword', 'toggleNewPasswordBtn');
 
     if ($('changePasswordModalClose')) $('changePasswordModalClose').addEventListener('click', function() {
       Logit.Utils.closeModal($('changePasswordModal'));

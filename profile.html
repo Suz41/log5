@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/main.css?v=30">
 <link rel="stylesheet" href="css/components.css?v=30">
-<link rel="stylesheet" href="css/profile.css?v=30">
+<link rel="stylesheet" href="css/profile.css?v=33">
 <link rel="stylesheet" href="css/modal.css?v=30">
 <link rel="stylesheet" href="css/desktop.css?v=30">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
@@ -240,19 +240,25 @@
 
 <!-- Change Password Modal -->
 <div class="importModal" id="changePasswordModal">
-  <div class="importSheet">
+  <div class="importSheet changePasswordSheet">
     <div class="modalHeader">
       <h3>Change Password</h3>
       <button class="modalClose" id="changePasswordModalClose">&times;</button>
     </div>
-    <div class="authForm" style="margin-top: 16px; display: flex; flex-direction: column; gap: 12px;">
-      <input type="password" id="changeCurrentPassword" class="authInput" placeholder="Current Password" style="width: 100%; padding: 12px 14px; background: rgba(255, 255, 255, 0.04); border: 0.5px solid var(--border); border-radius: 10px; color: var(--text); font-size: 14px; outline: none;">
-      <input type="password" id="changeNewPassword" class="authInput" placeholder="New Password (6+ characters)" style="width: 100%; padding: 12px 14px; background: rgba(255, 255, 255, 0.04); border: 0.5px solid var(--border); border-radius: 10px; color: var(--text); font-size: 14px; outline: none;">
-      <div style="display: flex; justify-content: flex-end; align-items: center;">
-        <button type="button" id="modalForgotPasswordBtn" style="background: none; border: none; color: var(--muted); font-size: 13px; cursor: pointer; padding: 4px 0; font-family: inherit;">Forgot Password?</button>
+    <div class="authForm modalAuthForm">
+      <div class="passwordInputWrap">
+        <input type="password" id="changeCurrentPassword" class="authInput modalInput" placeholder="Current Password">
+        <button type="button" class="modalPasswordToggle" id="toggleCurrentPasswordBtn">&#128065;</button>
       </div>
-      <button class="importBtn" id="modalChangePasswordStartBtn" style="width: 100%; height: 44px; background: var(--green); color: #000; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; font-size: 14px; margin-top: 4px;">Update Password</button>
-      <div id="changePasswordStatus" style="font-size: 12px; color: var(--red); text-align: center; min-height: 16px;"></div>
+      <div class="passwordInputWrap">
+        <input type="password" id="changeNewPassword" class="authInput modalInput" placeholder="New Password (6+ characters)">
+        <button type="button" class="modalPasswordToggle" id="toggleNewPasswordBtn">&#128065;</button>
+      </div>
+      <div class="forgotPasswordContainer">
+        <button type="button" id="modalForgotPasswordBtn" class="modalForgotLink">Forgot Password?</button>
+      </div>
+      <button class="importBtn modalSubmitBtn" id="modalChangePasswordStartBtn">Update Password</button>
+      <div id="changePasswordStatus" class="modalStatusMsg"></div>
     </div>
   </div>
 </div>
@@ -316,8 +322,8 @@
 <script src="js/export.js?v=30"></script>
 <script src="js/overlays.js?v=30"></script>
 <script src="js/posterPicker.js?v=30"></script>
-<script src="js/drive.js?v=32"></script>
-<script src="js/profile.js?v=32"></script>
+<script src="js/drive.js?v=33"></script>
+<script src="js/profile.js?v=33"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     Logit.ProfilePage.init();
