@@ -1100,9 +1100,9 @@
 }
 
 .modalInput:focus {
-  border-color: var(--green) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
   background: rgba(255, 255, 255, 0.05) !important;
-  box-shadow: 0 0 0 3px rgba(48, 209, 88, 0.15) !important;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08) !important;
 }
 
 .modalPasswordToggle {
@@ -1147,21 +1147,23 @@
   text-decoration: underline;
 }
 
+/* Submit Button (Monochrome match) */
 .modalSubmitBtn {
   width: 100% !important;
   height: 46px !important;
-  background: var(--green) !important;
-  color: #000 !important;
+  background: #ffffff !important;
+  color: #000000 !important;
   border: none !important;
   border-radius: 12px !important;
   font-weight: 600 !important;
   cursor: pointer;
   font-size: 14px !important;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05) !important;
   transition: all 0.2s ease !important;
 }
 
 .modalSubmitBtn:hover {
-  filter: brightness(1.08) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
   transform: translateY(-1px);
 }
 
