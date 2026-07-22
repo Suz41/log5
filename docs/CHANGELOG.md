@@ -10,6 +10,7 @@ All notable changes to Log!t will be documented in this file.
 - Dedicated Account Connect / Disconnect button with instant OAuth token revocation
 - Pixel-perfect centered user profile header with absolute-positioned edit pencil icon next to username
 - Detailed visual dark-mode software architecture flowchart diagram illustrating UI, Services, and Storage Sync layers
+- Password recovery fallback inside the "Change Password" settings flow (prompting a password reset email if the user cancels or forgets their current password)
 
 ### Changed
 - Complete rewrite of `Logit.Drive` integration using modern `fetch()` API and async/await
