@@ -11,14 +11,14 @@
 
 .welcomeContainer {
   width: 100%;
-  max-width: 320px;
+  max-width: 360px;
 }
 
 .welcomeContent {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 32px;
+  gap: 24px;
 }
 
 .welcomeLogo {
@@ -27,9 +27,9 @@
 
 .welcomeLogo h1 {
   font-family: 'Poppins', sans-serif;
-  font-size: 32px;
+  font-size: 40px;
   font-weight: 700;
-  letter-spacing: -1px;
+  letter-spacing: -1.5px;
   color: var(--text);
   margin: 0;
 }
@@ -39,12 +39,16 @@
 }
 
 .welcomeTagline {
-  display: none;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin: 6px 0 0 0;
 }
 
 .welcomeMessage {
   text-align: center;
-  margin-top: -16px;
 }
 
 .welcomeMessage p {
@@ -57,10 +61,6 @@
 /* ========= AUTH FORM ========= */
 .authCard {
   width: 100%;
-  background: var(--bg);
-  border: 0.5px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
 }
 
 .authForm {
@@ -71,14 +71,14 @@
 
 .authInput {
   width: 100%;
-  height: 44px;
-  padding: 0 14px;
+  height: 48px;
+  padding: 0 16px;
   background: var(--surface2);
-  border: 0.5px solid var(--border);
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
   color: var(--text);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 14px;
+  font-size: 15px;
 }
 
 .authInput::placeholder {
@@ -87,25 +87,30 @@
 
 .authInput:focus {
   outline: none;
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.forgotLink {
+  align-self: flex-end;
+  margin-top: -4px;
 }
 
 .authActions {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   margin-top: 4px;
 }
 
 .btnPrimary {
   width: 100%;
-  height: 44px;
+  height: 48px;
   border: none;
-  border-radius: 10px;
+  border-radius: 12px;
   background: #fff;
   color: #000;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -114,15 +119,31 @@
   opacity: 0.85;
 }
 
+.authDivider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.authDivider::before,
+.authDivider::after {
+  content: '';
+  flex: 1;
+  height: 0.5px;
+  background: var(--border);
+}
+
 .btnSecondary {
   width: 100%;
-  height: 44px;
-  border: 0.5px solid var(--border);
-  border-radius: 10px;
+  height: 48px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
   background: transparent;
   color: var(--text);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -131,15 +152,11 @@
   opacity: 0.85;
 }
 
-.authFooter {
-  text-align: center;
-}
-
 .authLink {
   background: none;
   border: none;
   color: var(--muted);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   padding: 0;
@@ -163,12 +180,12 @@
 }
 
 .passwordWrap .authInput {
-  padding-right: 44px;
+  padding-right: 48px;
 }
 
 .passwordToggle {
   position: absolute;
-  right: 10px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
@@ -185,10 +202,19 @@
 /* ========= RESPONSIVE ========= */
 @media (min-width: 1024px) {
   .welcomeContainer {
-    max-width: 340px;
+    max-width: 380px;
   }
 
   .welcomeLogo h1 {
-    font-size: 36px;
+    font-size: 44px;
+  }
+
+  .authInput {
+    height: 50px;
+  }
+
+  .btnPrimary,
+  .btnSecondary {
+    height: 50px;
   }
 }

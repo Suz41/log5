@@ -6,8 +6,8 @@
 <title>Log!t - Welcome</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="css/main.css?v=35">
-<link rel="stylesheet" href="css/auth.css?v=35">
+<link rel="stylesheet" href="css/main.css?v=36">
+<link rel="stylesheet" href="css/auth.css?v=36">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
 <body class="welcomePage">
@@ -16,6 +16,7 @@
   <div class="welcomeContent">
     <div class="welcomeLogo">
       <h1>Log<span class="logo-accent">!</span>t</h1>
+      <p class="welcomeTagline">Your movie journal</p>
     </div>
 
     <div class="welcomeMessage">
@@ -30,12 +31,11 @@
           <input type="password" placeholder="Password" id="authPassword" class="authInput">
           <button type="button" id="togglePassword" class="passwordToggle"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 0 0 1.934 12c1.388 4.178 5.325 7.178 9.963 7.178.932 0 1.838-.12 2.7-.348M21.934 12c-1.388-4.178-5.325-7.178-9.963-7.178a10.478 10.478 0 0 0-2.7.348m8.05 13.05L19 19m-4.5-4.5a3 3 0 0 1-4.5-4.5m0 0L8 8m-4 4 1.5 1.5M20 12l-1.5 1.5" /><path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18" /></svg></button>
         </div>
+        <button class="authLink forgotLink" id="forgotPasswordBtn">Forgot Password?</button>
         <div class="authActions">
           <button class="btnPrimary" id="signInBtn">Sign In</button>
+          <div class="authDivider"><span>or</span></div>
           <button class="btnSecondary" id="createAccountBtn">Create Account</button>
-        </div>
-        <div class="authFooter">
-          <button class="authLink" id="forgotPasswordBtn">Forgot Password?</button>
         </div>
         <span class="authMessage" id="authMessage"></span>
       </div>
@@ -43,10 +43,10 @@
   </div>
 </div>
 
-<script src="js/config.js?v=35"></script>
-<script src="js/constants.js?v=35"></script>
-<script src="js/supabase.js?v=35"></script>
-<script src="js/auth.js?v=35"></script>
+<script src="js/config.js?v=36"></script>
+<script src="js/constants.js?v=36"></script>
+<script src="js/supabase.js?v=36"></script>
+<script src="js/auth.js?v=36"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
     Logit.Auth.initWelcomePage();
