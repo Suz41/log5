@@ -1079,22 +1079,82 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.7);
-  backdrop-filter: blur(10px);
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   z-index: 200;
   align-items: center;
   justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .changePasswordModal.active {
   display: flex;
+  opacity: 1;
+}
+
+.changePasswordSheet {
+  width: 90%;
+  max-width: 400px;
+  background: #1a1a1a;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
+  animation: modalSlideIn 0.3s cubic-bezier(0.2, 0, 0, 1);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.changePasswordSheet .modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.changePasswordSheet .modalHeader h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  letter-spacing: -0.3px;
+}
+
+.changePasswordSheet .modalClose {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.06);
+  border: none;
+  color: var(--muted);
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+}
+
+.changePasswordSheet .modalClose:hover {
+  background: rgba(255,255,255,0.12);
+  color: var(--text);
 }
 
 .modalAuthForm {
-  margin-top: 20px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .passwordInputWrap {
@@ -1102,47 +1162,66 @@
   width: 100%;
 }
 
+.passwordInputWrap label {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 .modalInput {
   width: 100% !important;
-  padding: 13px 44px 13px 16px !important;
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid var(--border) !important;
+  height: 48px !important;
+  padding: 0 48px 0 16px !important;
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
   border-radius: 12px !important;
   color: var(--text) !important;
-  font-size: 14px !important;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  font-size: 15px !important;
+  font-family: inherit !important;
+  transition: all 0.2s ease !important;
+}
+
+.modalInput::placeholder {
+  color: rgba(255,255,255,0.3) !important;
 }
 
 .modalInput:focus {
-  border-color: rgba(255, 255, 255, 0.25) !important;
-  background: rgba(255, 255, 255, 0.05) !important;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08) !important;
+  outline: none !important;
+  border-color: rgba(255,255,255,0.25) !important;
+  background: rgba(255,255,255,0.06) !important;
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.06) !important;
 }
 
 .modalPasswordToggle {
   position: absolute;
-  right: 14px;
+  right: 12px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   color: var(--muted);
-  font-size: 16px;
   cursor: pointer;
-  padding: 4px;
-  opacity: 0.6;
-  transition: opacity 0.2s, transform 0.2s;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  transition: opacity 0.2s;
 }
 
 .modalPasswordToggle:hover {
   opacity: 1;
-  transform: translateY(-50%) scale(1.1);
 }
 
 .forgotPasswordContainer {
   display: flex;
   justify-content: flex-end;
   align-items: center;
+  margin-top: -4px;
 }
 
 .modalForgotLink {
@@ -1158,56 +1237,61 @@
 
 .modalForgotLink:hover {
   color: var(--text);
-  text-decoration: underline;
 }
 
-/* Submit Button (Monochrome match) */
 .modalSubmitBtn {
   width: 100% !important;
-  height: 46px !important;
-  background: #ffffff !important;
-  color: #000000 !important;
+  height: 48px !important;
+  background: #fff !important;
+  color: #000 !important;
   border: none !important;
   border-radius: 12px !important;
+  font-size: 15px !important;
   font-weight: 600 !important;
   cursor: pointer;
-  font-size: 14px !important;
-  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05) !important;
+  margin-top: 8px;
   transition: all 0.2s ease !important;
 }
 
 .modalSubmitBtn:hover {
-  background: rgba(255, 255, 255, 0.9) !important;
+  background: rgba(255,255,255,0.9) !important;
   transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255,255,255,0.15) !important;
 }
 
 .modalSubmitBtn:active {
-  transform: translateY(1px) scale(0.98);
+  transform: translateY(0) scale(0.98) !important;
 }
 
 .modalStatusMsg {
-  font-size: 12px;
+  font-size: 13px;
   text-align: center;
-  min-height: 16px;
+  min-height: 18px;
   line-height: 1.4;
+  color: var(--red);
 }
 
 /* ========= MOBILE PASSWORD MODAL ========= */
 @media (max-width: 768px) {
   .changePasswordSheet {
-    width: 95% !important;
+    width: 92% !important;
     max-width: none !important;
     padding: 20px !important;
+    border-radius: 16px !important;
+  }
+
+  .changePasswordSheet .modalHeader h3 {
+    font-size: 17px;
   }
 
   .modalInput {
-    padding: 14px 44px 14px 16px !important;
+    height: 50px !important;
     font-size: 16px !important;
   }
 
   .modalSubmitBtn {
-    height: 50px !important;
-    font-size: 15px !important;
+    height: 52px !important;
+    font-size: 16px !important;
   }
 }
 

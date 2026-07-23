@@ -606,6 +606,23 @@
     max-width: 480px;
   }
 
+  .changePasswordSheet {
+    max-width: 420px;
+    padding: 28px;
+  }
+
+  .changePasswordSheet .modalHeader h3 {
+    font-size: 20px;
+  }
+
+  .modalInput {
+    height: 50px !important;
+  }
+
+  .modalSubmitBtn {
+    height: 50px !important;
+  }
+
   .favPoster {
     width: 170px;
     height: 255px;
