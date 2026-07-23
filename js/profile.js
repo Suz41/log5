@@ -4,6 +4,7 @@ Logit.ProfilePage = {
   _user: null,
   _movies: [],
   _favorites: [],
+  _LAST_BACKUP_KEY: 'logit_last_backup',
 
   _setAvatar(url) {
     var avatarEl = document.getElementById('profileAvatar');
@@ -35,7 +36,28 @@ Logit.ProfilePage = {
       if (typeof google !== 'undefined' && google.accounts) {
         Logit.Drive.init();
       }
+      this.showLastBackup();
     } catch (e) { console.error('Profile init error:', e); }
+  },
+
+  showLastBackup() {
+    var lastBackup = localStorage.getItem(this._LAST_BACKUP_KEY);
+    var el = document.getElementById('lastBackupTime');
+    if (el && lastBackup) {
+      var diff = Date.now() - parseInt(lastBackup);
+      var mins = Math.floor(diff / 60000);
+      var hours = Math.floor(mins / 60);
+      if (hours > 0) el.textContent = hours + 'h ago';
+      else if (mins > 0) el.textContent = mins + 'm ago';
+      else el.textContent = 'Just now';
+    } else if (el) {
+      el.textContent = 'Never';
+    }
+  },
+
+  updateLastBackup() {
+    localStorage.setItem(this._LAST_BACKUP_KEY, String(Date.now()));
+    this.showLastBackup();
   },
 
   async checkAuth() {
@@ -484,6 +506,7 @@ Logit.ProfilePage = {
         if (titleEl) titleEl.textContent = 'Backing up...';
         if (subEl) subEl.textContent = 'Uploading to Google Drive...';
         var result = await Logit.Drive.backup();
+        if (result.success) self.updateLastBackup();
         alert(result.message);
       } catch (e) {
         alert('Backup failed: ' + e.message);

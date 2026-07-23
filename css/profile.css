@@ -438,6 +438,13 @@
   opacity: 0.5;
 }
 
+.backupTime {
+  font-size: 11px;
+  color: var(--muted);
+  margin-left: auto;
+  margin-right: 8px;
+}
+
 .settingsItem.danger {
   color: var(--red);
 }

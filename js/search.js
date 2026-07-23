@@ -2,14 +2,23 @@ window.Logit = window.Logit || {};
 
 Logit.Search = {
   cache: {},
+  _lastRequest: 0,
+  _MIN_INTERVAL: 300, // 300ms between requests
 
   /** @param {string} url @param {number} retries @returns {Promise<Object|null>} */
   async tmdb(url, retries = 2) {
     if (this.cache[url]) return this.cache[url];
+
+    // Rate limit: wait if too soon
+    const now = Date.now();
+    const wait = this._MIN_INTERVAL - (now - this._lastRequest);
+    if (wait > 0) await new Promise(resolve => setTimeout(resolve, wait));
+    this._lastRequest = Date.now();
+
     for (let i = 0; i <= retries; i++) {
       try {
         const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 10000); // 10s timeout
+        const timeout = setTimeout(() => controller.abort(), 10000);
         const r = await fetch(url, { signal: controller.signal });
         clearTimeout(timeout);
         if (!r.ok) return null;
