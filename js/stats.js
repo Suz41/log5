@@ -13,7 +13,8 @@ Logit.StatsPage = {
     var API = Logit.Config.getApiKey();
     var $ = Logit.Utils.byId;
 
-    var movies = await Logit.Storage.loadMovies();
+    var result = await Logit.Storage.loadMovies();
+    var movies = result.movies;
     var stats = Logit.StatUtils.aggregate(movies);
 
     // ========= HERO BOX =========

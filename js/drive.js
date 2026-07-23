@@ -190,7 +190,8 @@ Logit.Drive = {
     }
 
     try {
-      const movies = (await Logit.Storage.loadMovies()) || [];
+      const result = await Logit.Storage.loadMovies();
+      const movies = result.movies || [];
       const settings = await this._loadSettings();
       const backupData = {
         version: 1,
@@ -312,7 +313,7 @@ Logit.Drive = {
   async _loadSettings() {
     if (!Logit.Supabase || !Logit.Supabase.getClient) return {};
     const client = Logit.Supabase.getClient();
-    const userId = localStorage.getItem('logit_user_id');
+    const userId = Logit.Auth.getUserId();
     if (!client || !userId) return {};
     try {
       const { data } = await client.from('settings').select('*').eq('user_id', userId).single();

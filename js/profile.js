@@ -72,7 +72,14 @@ Logit.ProfilePage = {
   },
 
   async loadMoviesFromCloud() {
-    try { this._movies = await Logit.Storage.loadMovies(); } catch (e) { this._movies = []; }
+    try {
+      var result = await Logit.Storage.loadMovies();
+      this._movies = result.movies;
+      this._loadError = result.error;
+    } catch (e) {
+      this._movies = [];
+      this._loadError = 'Failed to load movies';
+    }
   },
 
   loadProfile() {
@@ -151,7 +158,7 @@ Logit.ProfilePage = {
   // ========= FAVORITES (stored in settings table) =========
   async loadFavoritesFromCloud() {
     var client = Logit.Supabase.getClient();
-    var userId = localStorage.getItem('logit_user_id');
+    var userId = Logit.Auth.getUserId();
     if (!client || !userId) return;
     try {
       var { data } = await client.from('settings').select('favorites').eq('user_id', userId).single();
@@ -314,7 +321,7 @@ Logit.ProfilePage = {
 
   async syncFavoritesToCloud(favorites) {
     var client = Logit.Supabase.getClient();
-    var userId = localStorage.getItem('logit_user_id');
+    var userId = Logit.Auth.getUserId();
     if (!client || !userId) return;
     try {
       await client.from('settings').upsert({
@@ -330,7 +337,7 @@ Logit.ProfilePage = {
   // ========= AVATAR =========
   async loadAvatarFromCloud() {
     var client = Logit.Supabase.getClient();
-    var userId = localStorage.getItem('logit_user_id');
+    var userId = Logit.Auth.getUserId();
     if (!client || !userId) return;
     try {
       var { data, error } = await client.from('settings').select('avatar').eq('user_id', userId).single();
@@ -343,7 +350,7 @@ Logit.ProfilePage = {
 
   async syncAvatarToCloud(avatarData) {
     var client = Logit.Supabase.getClient();
-    var userId = localStorage.getItem('logit_user_id');
+    var userId = Logit.Auth.getUserId();
     if (!client || !userId) { console.warn('Avatar sync: no client or userId'); return; }
     try {
       var { error } = await client.from('settings').upsert({
@@ -357,7 +364,7 @@ Logit.ProfilePage = {
 
   async clearAvatarFromCloud() {
     var client = Logit.Supabase.getClient();
-    var userId = localStorage.getItem('logit_user_id');
+    var userId = Logit.Auth.getUserId();
     if (!client || !userId) return;
     try {
       await client.from('settings').upsert({
@@ -545,12 +552,12 @@ Logit.ProfilePage = {
     // Import / Export
     if ($('exportBtn')) $('exportBtn').addEventListener('click', function() { Logit.Utils.openModal($('exportModal')); });
     if ($('exportJsonBtn')) $('exportJsonBtn').addEventListener('click', async function() {
-      var movies = await Logit.Storage.loadMovies();
-      Logit.Export.doExport(movies, 'json', function() { Logit.Utils.closeModal($('exportModal')); });
+      var result = await Logit.Storage.loadMovies();
+      Logit.Export.doExport(result.movies, 'json', function() { Logit.Utils.closeModal($('exportModal')); });
     });
     if ($('exportTxtBtn')) $('exportTxtBtn').addEventListener('click', async function() {
-      var movies = await Logit.Storage.loadMovies();
-      Logit.Export.doExport(movies, 'txt', function() { Logit.Utils.closeModal($('exportModal')); });
+      var result = await Logit.Storage.loadMovies();
+      Logit.Export.doExport(result.movies, 'txt', function() { Logit.Utils.closeModal($('exportModal')); });
     });
     if ($('exportCancelBtn')) $('exportCancelBtn').addEventListener('click', function() { Logit.Utils.closeModal($('exportModal')); });
 
@@ -773,7 +780,7 @@ Logit.ProfilePage = {
       if (!confirm('Delete ALL data from cloud?')) return;
       if (!confirm('This cannot be undone. Continue?')) return;
       var client = Logit.Supabase.getClient();
-      var userId = localStorage.getItem('logit_user_id');
+      var userId = Logit.Auth.getUserId();
       if (client && userId) {
         await client.from('movies').delete().eq('user_id', userId);
       }

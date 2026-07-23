@@ -38,6 +38,14 @@ Logit.Auth = {
     localStorage.setItem(this._SESSION_TIMEOUT_KEY, String(Date.now()));
   },
 
+  /**
+   * Get current user ID (single source of truth)
+   * @returns {string|null}
+   */
+  getUserId() {
+    return localStorage.getItem('logit_user_id');
+  },
+
   setupButtons() {
     var self = this;
     var signInBtn = document.getElementById('signInBtn');

@@ -16,12 +16,12 @@ Logit.Storage = {
 
   /**
    * Load all movies from Supabase for the current user.
-   * @returns {Promise<Array>}
+   * @returns {Promise<{ movies: Array, error: string|null }>}
    */
   async loadMovies() {
     var client = Logit.Supabase.getClient();
-    var userId = localStorage.getItem('logit_user_id');
-    if (!client || !userId) return [];
+    var userId = Logit.Auth.getUserId();
+    if (!client || !userId) return { movies: [], error: 'Not signed in' };
 
     try {
       var { data, error } = await client
@@ -31,10 +31,13 @@ Logit.Storage = {
         .order('d', { ascending: false });
 
       if (error) throw new Error(error.message);
-      return data || [];
+      return { movies: data || [], error: null };
     } catch (e) {
       console.error('Failed to load movies:', e);
-      return [];
+      var msg = 'Failed to load movies';
+      if (!navigator.onLine) msg = 'You are offline';
+      else if (e.message.includes('Failed to fetch')) msg = 'Unable to connect to cloud';
+      return { movies: [], error: msg };
     }
   },
 
@@ -47,7 +50,7 @@ Logit.Storage = {
   async saveMovie(movie, action) {
     action = action || 'create';
     var client = Logit.Supabase.getClient();
-    var userId = localStorage.getItem('logit_user_id');
+    var userId = Logit.Auth.getUserId();
     if (!client || !userId) throw new Error('Not authenticated');
 
     var now = new Date().toISOString();
@@ -78,7 +81,7 @@ Logit.Storage = {
    */
   async deleteMovie(movieId) {
     var client = Logit.Supabase.getClient();
-    var userId = localStorage.getItem('logit_user_id');
+    var userId = Logit.Auth.getUserId();
     if (!client || !userId) throw new Error('Not authenticated');
 
     var { error } = await client.from('movies').delete()
@@ -106,7 +109,7 @@ Logit.Storage = {
    */
   async getCloudStorageUsage() {
     var client = Logit.Supabase.getClient();
-    var userId = localStorage.getItem('logit_user_id');
+    var userId = Logit.Auth.getUserId();
     if (!client || !userId) return { count: 0, bytes: 0, formatted: '0 B' };
 
     try {

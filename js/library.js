@@ -74,6 +74,24 @@ Logit.LibraryPage = {
     async function renderMovies() {
       library.textContent = '';
 
+      if (state.loadError) {
+        var errorDiv = document.createElement('div');
+        errorDiv.className = 'empty';
+        var errorIcon = document.createElement('div');
+        errorIcon.className = 'emptyIcon';
+        errorIcon.innerHTML = '<svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>';
+        var errorTitle = document.createElement('div');
+        errorTitle.className = 'emptyTitle';
+        errorTitle.textContent = state.loadError;
+        var retryBtn = document.createElement('button');
+        retryBtn.className = 'retryBtn';
+        retryBtn.textContent = 'Retry';
+        retryBtn.onclick = function() { state.loadError = null; loadAndRender(); };
+        errorDiv.append(errorIcon, errorTitle, retryBtn);
+        library.append(errorDiv);
+        return;
+      }
+
       if (state.movies.length === 0) {
         var emptyDiv = document.createElement('div');
         emptyDiv.className = 'empty';
@@ -188,7 +206,14 @@ Logit.LibraryPage = {
     }
 
     async function loadAndRender() {
-      try { state.movies = await Logit.Storage.loadMovies(); } catch (e) { console.error('Load failed:', e); }
+      try {
+        var result = await Logit.Storage.loadMovies();
+        state.movies = result.movies;
+        state.loadError = result.error;
+      } catch (e) {
+        console.error('Load failed:', e);
+        state.loadError = 'Failed to load movies';
+      }
       renderMovies();
     }
     loadAndRender();

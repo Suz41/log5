@@ -37,7 +37,7 @@ Logit.AboutPage = {
       clearBtn.addEventListener('click', async function() {
         if (!confirm('Clear all movie data from cloud? This cannot be undone.')) return;
         var client = Logit.Supabase.getClient();
-        var userId = localStorage.getItem('logit_user_id');
+        var userId = Logit.Auth.getUserId();
         if (client && userId) {
           await client.from('movies').delete().eq('user_id', userId);
         }
