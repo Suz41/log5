@@ -590,6 +590,16 @@
   .settingsItem {
     padding: 16px 20px;
     font-size: 14px;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+  }
+
+  .settingsItem:hover {
+    background: rgba(255,255,255,0.08);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+
+  .settingsItem:active {
+    transform: scale(0.98);
   }
 
   .importSheet, .exportSheet, .favSheet {

@@ -408,12 +408,17 @@
   color: var(--text);
   font-size: 14px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, transform 0.1s;
   text-align: left;
 }
 
 .settingsItem:hover {
-  background: rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.06);
+}
+
+.settingsItem:active {
+  transform: scale(0.98);
+  background: rgba(255,255,255,0.08);
 }
 
 .settingsItem + .settingsItem {
@@ -905,6 +910,16 @@
     margin-bottom: 0;
   }
 
+  .settingsItem {
+    padding: 16px;
+    min-height: 52px;
+  }
+
+  .settingsItem:active {
+    background: rgba(255,255,255,0.1);
+    transform: scale(0.98);
+  }
+
   .blockTitle {
     font-size: 11px;
     margin-bottom: 12px;
@@ -1009,7 +1024,6 @@
   background: rgba(46, 204, 113, 0.15);
   color: #2ecc71;
   border: 1px solid rgba(46, 204, 113, 0.35);
-  box-shadow: 0 0 10px rgba(46, 204, 113, 0.15);
 }
 
 .driveStatusBadge.disconnected {
@@ -1024,10 +1038,6 @@
   border-radius: 50%;
   background: currentColor;
   display: inline-block;
-}
-
-.driveStatusBadge.connected .statusDot {
-  /* no animation */
 }
 
 .driveConnectBtn {
@@ -1170,6 +1180,25 @@
   text-align: center;
   min-height: 16px;
   line-height: 1.4;
+}
+
+/* ========= MOBILE PASSWORD MODAL ========= */
+@media (max-width: 768px) {
+  .changePasswordSheet {
+    width: 95% !important;
+    max-width: none !important;
+    padding: 20px !important;
+  }
+
+  .modalInput {
+    padding: 14px 44px 14px 16px !important;
+    font-size: 16px !important;
+  }
+
+  .modalSubmitBtn {
+    height: 50px !important;
+    font-size: 15px !important;
+  }
 }
 
 
