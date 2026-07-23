@@ -31,12 +31,14 @@ Logit.Auth = {
     var offlineBtn = document.getElementById('continueOfflineBtn');
     var toggleBtn = document.getElementById('togglePassword');
     var forgotBtn = document.getElementById('forgotPasswordBtn');
+    var backBtn = document.getElementById('backToSignIn');
 
     if (signInBtn) signInBtn.addEventListener('click', function() { self.handleSignIn(); });
     if (createBtn) createBtn.addEventListener('click', function() {
       if (self._mode === 'signin') self.toggleMode();
       else self.handleCreateAccount();
     });
+    if (backBtn) backBtn.addEventListener('click', function() { self.toggleMode(); });
     if (offlineBtn) offlineBtn.style.display = 'none';
     if (toggleBtn) toggleBtn.addEventListener('click', function() { self.togglePassword(); });
     if (forgotBtn) forgotBtn.addEventListener('click', function() { self.handleForgotPassword(); });
@@ -57,6 +59,8 @@ Logit.Auth = {
     var signInBtn = document.getElementById('signInBtn');
     var createBtn = document.getElementById('createAccountBtn');
     var forgotBtn = document.getElementById('forgotPasswordBtn');
+    var backBtn = document.getElementById('backToSignIn');
+    var divider = document.querySelector('.authDivider');
 
     if (this._mode === 'signin') {
       this._mode = 'signup';
@@ -64,12 +68,16 @@ Logit.Auth = {
       if (signInBtn) signInBtn.style.display = 'none';
       if (createBtn) createBtn.textContent = 'Create Account';
       if (forgotBtn) forgotBtn.style.display = 'none';
+      if (backBtn) backBtn.style.display = 'flex';
+      if (divider) divider.style.display = 'none';
     } else {
       this._mode = 'signin';
       if (usernameField) usernameField.style.display = 'none';
       if (signInBtn) signInBtn.style.display = 'block';
       if (createBtn) createBtn.textContent = 'Create Account';
       if (forgotBtn) forgotBtn.style.display = 'block';
+      if (backBtn) backBtn.style.display = 'none';
+      if (divider) divider.style.display = 'flex';
     }
     this.setMessage('');
   },
