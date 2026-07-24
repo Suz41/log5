@@ -24,22 +24,16 @@ Logit.AboutPage = {
     // Load existing API keys
     if ($('tmdbApiKey')) $('tmdbApiKey').value = Logit.Config.getApiKey() || '';
     if ($('todoistApiKeyAbout')) $('todoistApiKeyAbout').value = localStorage.getItem('logit_todoist_key') || '';
-    if ($('supabaseUrl')) $('supabaseUrl').value = localStorage.getItem('supabase_url') || '';
-    if ($('supabaseKey')) $('supabaseKey').value = localStorage.getItem('supabase_anon_key') || '';
 
     // Save all keys
     if ($('saveAllKeys')) $('saveAllKeys').addEventListener('click', function() {
       var tmdb = ($('tmdbApiKey') || {}).value.trim();
       var todoist = ($('todoistApiKeyAbout') || {}).value.trim();
-      var supaUrl = ($('supabaseUrl') || {}).value.trim();
-      var supaKey = ($('supabaseKey') || {}).value.trim();
 
       if (tmdb) Logit.Config.setApiKey(tmdb);
       if (todoist) localStorage.setItem('logit_todoist_key', todoist);
-      if (supaUrl) localStorage.setItem('supabase_url', supaUrl);
-      if (supaKey) localStorage.setItem('supabase_anon_key', supaKey);
 
-      alert('All keys saved!');
+      alert('Keys saved!');
       location.reload();
     });
 
