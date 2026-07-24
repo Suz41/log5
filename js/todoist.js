@@ -22,7 +22,7 @@ Logit.Todoist = {
   },
 
   /**
-   * Fetch tasks from Todoist API
+   * Fetch tasks from Todoist API (only from "Movies" or "Log!t" project)
    * @returns {Promise<Array>}
    */
   async fetchTasks() {
@@ -30,14 +30,33 @@ Logit.Todoist = {
     if (!apiKey) return [];
 
     try {
-      const res = await fetch('https://api.todoist.com/rest/v2/tasks', {
+      // First, get projects to find "Movies" or "Log!t" project
+      const projRes = await fetch('https://api.todoist.com/rest/v2/projects', {
         headers: { 'Authorization': 'Bearer ' + apiKey }
       });
 
-      if (!res.ok) {
-        if (res.status === 401) throw new Error('Invalid Todoist API key');
-        throw new Error('Todoist API error: ' + res.status);
+      if (!projRes.ok) {
+        if (projRes.status === 401) throw new Error('Invalid Todoist API key');
+        throw new Error('Todoist API error: ' + projRes.status);
       }
+
+      const projects = await projRes.json();
+      const movieProject = projects.find(p =>
+        p.name.toLowerCase() === 'movies' ||
+        p.name.toLowerCase() === 'logit' ||
+        p.name.toLowerCase() === 'log!t'
+      );
+
+      if (!movieProject) {
+        throw new Error('No "Movies" or "Log!t" project found. Create one in Todoist first.');
+      }
+
+      // Fetch tasks from that project
+      const res = await fetch('https://api.todoist.com/rest/v2/tasks?project_id=' + movieProject.id, {
+        headers: { 'Authorization': 'Bearer ' + apiKey }
+      });
+
+      if (!res.ok) throw new Error('Todoist API error: ' + res.status);
 
       return await res.json();
     } catch (e) {
