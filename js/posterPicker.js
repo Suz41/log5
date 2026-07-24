@@ -44,7 +44,7 @@ Logit.PosterPicker = {
       card.setAttribute('aria-label', 'Select poster in ' + p.l);
 
       var imgEl = document.createElement('img');
-      imgEl.src = Logit.Utils.esc(Logit.Utils.img(p.u, 'w342'));
+      imgEl.src = Logit.Utils.esc(Logit.Utils.img(p.u, 'w780'));
       imgEl.loading = 'lazy';
       imgEl.onerror = function() { this.onerror = null; this.src = Logit.POSTER_FALLBACK; };
 
