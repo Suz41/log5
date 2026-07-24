@@ -463,6 +463,20 @@
   color: var(--red);
 }
 
+.settingsInput {
+  flex: 1;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+}
+
+.settingsInput::placeholder {
+  color: var(--muted);
+}
+
 /* ========= FAVORITE MODAL ========= */
 .favModal {
   display: none;
